@@ -19,9 +19,7 @@ flowchart LR
     classDef ext fill:#d97706,stroke:#92400e,color:#fff
     classDef user fill:#374151,stroke:#111827,color:#fff
 
-    U1[Pilot User\nNAP Analyst]:::user
-    U2[Administrator]:::user
-    U3[Technical Integrator]:::user
+    U[NAP operator]:::user
 
     APP["NAP ITS Reporter\n(Web Application)"]:::app
     PATTERN["Federated Registry and Discoverability architecture for cross-NAP interoperability"]:::system
@@ -31,9 +29,7 @@ flowchart LR
     DGMOVE[DG MOVE templates and reporting requirements]:::ext
     STD[mobilityDCAT-AP and RDF standards\nJSON-LD, TTL, RDF/XML]:::ext
 
-    U1 -->|review, validate, report| APP
-    U2 -->|manage system, rules, and access| APP
-    U3 -->|uses API contracts and documentation| APP
+    U -->|review, validate, report| APP
     APP -.implements.-> PATTERN
     APP -->|interlink heterogeneous NAPs and discover endpoints, datasets, and relations| NAP
     APP -->|interoperable integrations| INFRA
@@ -51,7 +47,7 @@ flowchart TB
     classDef ext fill:#d97706,stroke:#92400e,color:#fff
     classDef user fill:#374151,stroke:#111827,color:#fff
 
-    U[User]:::user
+    U[NAP operator]:::user
 
     subgraph PLATFORM["NAP ITS Reporter"]
         subgraph PRESENTATION["Presentation Layer"]
@@ -219,6 +215,8 @@ flowchart LR
 
 ## 7) PUML and SVG Diagrams
 
+- Mermaid System Context source: `docs/architecture/mermaid/system-context.mmd`
+- Mermaid System Context SVG: `docs/architecture/svg/system-context-mermaid.svg`
 - PUML System Context: `docs/architecture/puml/system-context.puml`
 - SVG System Context: `docs/architecture/svg/system-context.svg`
 - PUML Container: `docs/architecture/puml/container.puml`

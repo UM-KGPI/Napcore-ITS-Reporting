@@ -1,9 +1,7 @@
 workspace "NAP ITS Reporter" "C4 model for the web application using a Federated Registry and Discoverability architecture for cross-NAP interoperability" {
 
     model {
-        pilotAnalyst = person "Pilot User (NAP Analyst)" "Reviews compliance and prepares reports."
-        administrator = person "Administrator" "Manages rules, configuration, and access."
-        technicalIntegrator = person "Technical Integrator" "Uses API contracts and discoverability APIs/documentation."
+        napOperator = person "NAP operator" "Reviews compliance, validates metadata, and prepares reports."
 
         nap = softwareSystem "NAP endpoints" "NAP catalog and API endpoints for metadata."
         infra = softwareSystem "Infrastructure services" "Registry, storage, and messaging infrastructure services."
@@ -50,16 +48,14 @@ workspace "NAP ITS Reporter" "C4 model for the web application using a Federated
             exportManager = component "Export Manager" "Exports PDF/HTML/JSON outputs." "Output component"
         }
 
-        pilotAnalyst -> reporter "Uses for validation and reporting"
-        administrator -> reporter "Manages configuration and access"
-        technicalIntegrator -> reporter "Uses API documentation, contracts, and discovery capabilities"
+        napOperator -> reporter "Uses for validation and reporting"
 
         reporter -> nap "Discovers and ingests metadata"
         reporter -> infra "Integrates with infrastructure services"
         reporter -> dgMove "Uses reporting templates"
 
         webUi -> bff "HTTPS/JSON"
-        technicalIntegrator -> apiDocs "Reads endpoint docs"
+        napOperator -> apiDocs "Reads endpoint docs"
         apiDocs -> bff "Documents endpoint contracts"
         bff -> workflow "Calls workflow APIs"
         bff -> iam "Authorizes requests"

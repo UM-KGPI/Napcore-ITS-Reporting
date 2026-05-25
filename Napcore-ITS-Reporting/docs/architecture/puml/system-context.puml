@@ -14,9 +14,7 @@ skinparam actor {
   BorderColor #333333
 }
 
-actor "Pilot User\n(NAP Analyst)" as U1
-actor "Administrator" as U2
-actor "Technical Integrator" as U3
+actor "NAP operator" as U
 
 rectangle "NAP ITS Reporter\n(Web Application)" as APP #d9f2e6
 rectangle "Federated Registry and Discoverability architecture for cross-NAP interoperability" as PATTERN #eef5ff
@@ -26,9 +24,7 @@ rectangle "Infrastructure Services\n(registry, storage, messaging)" as INFRA #ff
 rectangle "DG MOVE Templates\nand Reporting Requirements" as DGMOVE #fff3e0
 rectangle "mobilityDCAT-AP and RDF Standards\n(JSON-LD, TTL, RDF/XML)" as STD #fff3e0
 
-U1 --> APP : review, validate, report
-U2 --> APP : administer rules and access
-U3 --> APP : use API contracts and docs
+U --> APP : review, validate, report
 APP ..> PATTERN : implements
 
 APP --> NAP : interlink heterogeneous NAPs and discover endpoints/datasets/relations
