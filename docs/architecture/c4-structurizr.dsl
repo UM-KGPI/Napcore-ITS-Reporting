@@ -1,7 +1,7 @@
 workspace "NAP ITS Reporter" "C4 model for the web application using a Federated Registry and Discoverability architecture for cross-NAP interoperability" {
 
     model {
-        napOperator = person "NAP operator" "Reviews compliance, validates metadata, and prepares reports."
+        napOperator = person "Member state / NAP operator" "Reviews compliance, validates metadata, and prepares reports."
 
         nap = softwareSystem "NAP endpoints" "NAP catalog and API endpoints for metadata."
         infra = softwareSystem "Infrastructure services" "Registry, storage, and messaging infrastructure services."

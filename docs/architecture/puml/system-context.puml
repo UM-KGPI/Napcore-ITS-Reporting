@@ -14,7 +14,7 @@ skinparam actor {
   BorderColor #333333
 }
 
-actor "NAP operator" as U
+actor "Member state / NAP operator" as U
 
 rectangle "NAP ITS Reporter\n(Web Application)" as APP #d9f2e6
 rectangle "Federated Registry and Discoverability architecture for cross-NAP interoperability" as PATTERN #eef5ff

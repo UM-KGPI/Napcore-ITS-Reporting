@@ -14,7 +14,7 @@ skinparam database {
   BorderColor #6b21a8
 }
 
-actor "NAP operator" as USER
+actor "Member state / NAP operator" as USER
 
 package "NAP ITS Reporter" {
   rectangle "Federated Registry and Discoverability architecture for cross-NAP interoperability" as PATTERN #eef5ff
