@@ -30,7 +30,6 @@ flowchart LR
     INFRA[Infrastructure services\nregistry, storage, messaging]:::ext
     DGMOVE[DG MOVE templates and reporting requirements]:::ext
     STD[mobilityDCAT-AP and RDF standards\nJSON-LD, TTL, RDF/XML]:::ext
-    IDP[External IdP\nOIDC/SAML]:::ext
 
     U1 -->|review, validate, report| APP
     U2 -->|manage system, rules, and access| APP
@@ -40,7 +39,6 @@ flowchart LR
     APP -->|interoperable integrations| INFRA
     APP -->|apply reporting templates and KPI mappings| DGMOVE
     APP -->|apply validation rules and semantics| STD
-    APP -->|authentication and authorization| IDP
 ```
 
 ## 2) C4 - Container Diagram (Level 2)
@@ -85,7 +83,6 @@ flowchart TB
     NAP[NAP catalog and API endpoints]:::ext
     INFRA[Infrastructure services]:::ext
     DGMOVE[DG MOVE templates]:::ext
-    IDP[External Identity Provider]:::ext
 
     U --> UI
     UI --> BFF
@@ -120,7 +117,6 @@ flowchart TB
     KPI <--> MQ
     REP <--> MQ
 
-    IAM --> IDP
     IAM --> APPDB
 ```
 

@@ -47,7 +47,6 @@ package "NAP ITS Reporter" {
 rectangle "NAP Catalog and API Endpoints" as NAP #fff3e0
 rectangle "Infrastructure Services" as INFRA #fff3e0
 rectangle "DG MOVE Templates" as DGT #fff3e0
-rectangle "External IdP" as IDP #fff3e0
 
 USER --> UI
 UI --> BFF
@@ -83,6 +82,5 @@ VAL <--> MQ
 KPI <--> MQ
 REP <--> MQ
 
-IAM --> IDP
 IAM --> APPDB
 @enduml
