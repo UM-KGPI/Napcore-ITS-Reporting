@@ -1,10 +1,10 @@
-# Razvoj pilotne aplikacije za avtomatizirano zbiranje in obdelavo metapodatkov mobilityDCAT-AP
+# NAP ITS Reporter - C4 Architecture Design
 
-Ta dokument predstavlja zacetni C4 nacrt za spletno aplikacijo na podlagi pogodbenih zahtev.
+This document provides the initial C4 architecture design for the web application based on the contract requirements.
 
 ## 1) C4 - System Context (Level 1)
 
-Za strogo C4 notacijo (Structurizr DSL) glej: `docs/architecture/c4-structurizr.dsl`.
+For strict C4 notation (Structurizr DSL), see: `docs/architecture/c4-structurizr.dsl`.
 
 ```mermaid
 flowchart LR
@@ -158,33 +158,33 @@ flowchart LR
     Generator --> Exporter
 ```
 
-## 4) Zahteve -> C4 pokritost (povzetek)
+## 4) Requirement-to-C4 Coverage (Summary)
 
-- Zbiranje metapodatkov: `Metadata Ingestion Service`, `NAP adapters`, podpora RDF formatom v API pogodbah.
-- Preverjanje skladnosti: `Compliance Validation Service`, `Rule Repository`, `SHACL/SPARQL`.
-- Delovni tok porocanja: `Workflow Orchestrator`, `Reporting Service`, `Guided Report Assistant`, `KPI Mapping`.
-- Modularna arhitektura: mikroservisi + loceni podatkovni, logcni in predstavitveni sloj.
-- Sistemska arhitektura: `API Gateway/BFF`, standardizirani API contracts, `AuthN/AuthZ`, event-driven integracije.
-- UI zahteve: `Web UI` z nadzorno plosco za validacijo, neskladja, priporocila in porocevalske tokove.
+- Metadata collection: `Metadata Ingestion Service`, `NAP adapters`, and RDF format support in API contracts.
+- Compliance verification: `Compliance Validation Service`, `Rule Repository`, and `SHACL/SPARQL`.
+- Reporting workflow: `Workflow Orchestrator`, `Reporting Service`, `Guided Report Assistant`, and `KPI Mapping`.
+- Modular architecture: microservices plus separated data, logic, and presentation layers.
+- System architecture: `API Gateway/BFF`, standardized API contracts, `AuthN/AuthZ`, and event-driven integration.
+- UI requirements: `Web UI` with dashboard views for validation, non-compliance findings, recommendations, and reporting workflows.
 
-## 5) Izdelani nadaljnji koraki
+## 5) Completed Next-Step Artifacts
 
-- C4 Level 4 (Code) za Validation Service: `docs/architecture/c4-level4-validation.md`
-- C4 Level 4 (Code) za Reporting Service: `docs/architecture/c4-level4-reporting.md`
-- OpenAPI osnutek za BFF: `docs/api/openapi-bff.yaml`
-- OpenAPI osnutek za Validation Service: `docs/api/openapi-validation.yaml`
-- OpenAPI osnutek za Reporting Service: `docs/api/openapi-reporting.yaml`
+- C4 Level 4 (Code) for Validation Service: `docs/architecture/c4-level4-validation.md`
+- C4 Level 4 (Code) for Reporting Service: `docs/architecture/c4-level4-reporting.md`
+- OpenAPI draft for BFF: `docs/api/openapi-bff.yaml`
+- OpenAPI draft for Validation Service: `docs/api/openapi-validation.yaml`
+- OpenAPI draft for Reporting Service: `docs/api/openapi-reporting.yaml`
 - One-page architecture brief: `docs/brief/architecture-one-pager.md`
-- Stroga C4 notacija (Structurizr DSL): `docs/architecture/c4-structurizr.dsl`
-- Implementacijski API-first scaffold: `scaffold/README.md`
+- Strict C4 notation (Structurizr DSL): `docs/architecture/c4-structurizr.dsl`
+- Implementation API-first scaffold: `scaffold/README.md`
 
-## 6) Predlagan naslednji korak
+## 6) Proposed Next Step
 
-- Definicija C4 Level 4 za preostale storitve (Ingestion, Workflow, IAM).
-- Definicija podatkovnega modela (RDF named graphs + relacijski model za workflow stanje).
-- Priprava testne strategije (unit/integration/system/performance) po modulu.
+- Define C4 Level 4 for remaining services (Ingestion, Workflow, IAM).
+- Define the data model (RDF named graphs plus relational workflow state model).
+- Prepare a testing strategy (unit/integration/system/performance) per module.
 
-## 7) PUML in SVG diagrami
+## 7) PUML and SVG Diagrams
 
 - PUML System Context: `docs/architecture/puml/system-context.puml`
 - SVG System Context: `docs/architecture/svg/system-context.svg`

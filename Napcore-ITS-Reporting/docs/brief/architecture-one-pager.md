@@ -2,20 +2,20 @@
 
 ## Project
 
-Razvoj pilotne aplikacije za avtomatizirano zbiranje in obdelavo metapodatkov mobilityDCAT-AP
+NAP ITS Reporter - Pilot application for automated mobilityDCAT-AP metadata collection and processing
 
 ## Objective
 
-Vzpostaviti spletno aplikacijo, ki avtomatizira:
+Establish a web application that automates:
 
-- odkrivanje in zajem metapodatkov iz NAP,
-- preverjanje skladnosti z mobilityDCAT-AP in DG MOVE zahtevami,
-- pripravo porocil z vodnim delovnim tokom in KPI preslikavami.
+- metadata discovery and ingestion from NAP,
+- compliance checking against mobilityDCAT-AP and DG MOVE requirements,
+- report preparation through a guided workflow and KPI mappings.
 
 ## Architecture at a glance
 
-- Frontend: Web UI (SPA) za upravljanje tokov, pregled skladnosti in porocila.
-- Edge/API: API Gateway/BFF kot enoten vstop za UI in zunanje odjemalce.
+- Frontend: Web UI (SPA) for workflow management, compliance views, and reports.
+- Edge/API: API Gateway/BFF as a single entry point for UI and external clients.
 - Core services:
 - Metadata Ingestion Service
 - Compliance Validation Service
@@ -26,24 +26,24 @@ Vzpostaviti spletno aplikacijo, ki avtomatizira:
 - AuthN/AuthZ Service
 - Data layer:
 - RDF Metadata Store (triplestore)
-- Application DB (workflow, konfiguracija, audit)
-- Document Store (porocila in izvozi)
-- Integration: NAP API endpoints, DG MOVE predloge, zunanji IdP, event bus.
+- Application DB (workflow, configuration, audit)
+- Document Store (reports and exports)
+- Integration: NAP API endpoints, DG MOVE templates, external IdP, event bus.
 
 ## Why this design
 
-- Modularnost: mikroservisi omogocajo neodvisen razvoj in skaliranje.
-- Interoperabilnost: standardni API contracts in RDF podpora (JSON-LD, TTL, RDF/XML).
-- Skladnost: centralizirana pravila + verzionirani validacijski profili.
-- Operativnost: guided workflow skrajsa cas porocanja in zmanjsa napake.
-- Varnost: centralni AuthN/AuthZ, RBAC/ABAC in audit trail.
+- Modularity: microservices enable independent development and scaling.
+- Interoperability: standardized API contracts and RDF support (JSON-LD, TTL, RDF/XML).
+- Compliance: centralized rules and versioned validation profiles.
+- Operational efficiency: guided workflow reduces reporting time and errors.
+- Security: centralized AuthN/AuthZ, RBAC/ABAC, and audit trail.
 
 ## Contract requirement coverage
 
-- Specifikacija zahtev in arhitekture: C4 L1-L4 dokumenti in API osnutki.
-- Implementacija prototipa: API-first pristop in jasna razmejitev storitev.
-- Testiranje prototipa: zasnova podpira unit, integration, system in performance teste.
-- Tehnicna dokumentacija: OpenAPI specifikacije + arhitekturni dokumenti za uvajanje.
+- Requirements and architecture specification: C4 L1-L4 documents and API drafts.
+- Prototype implementation: API-first approach and clear service boundaries.
+- Prototype testing: design supports unit, integration, system, and performance testing.
+- Technical documentation: OpenAPI specifications and architecture documents for rollout.
 
 ## Delivery artifacts prepared
 
@@ -56,7 +56,7 @@ Vzpostaviti spletno aplikacijo, ki avtomatizira:
 
 ## Suggested immediate next sprint
 
-- Zakleni technology stack (frontend, backend, triplestore, queue).
-- Implementiraj skeleton storitev + CI pipeline.
-- Dodaj test harness za SHACL/SPARQL validacijo.
-- Dodaj pilotni workflow za 1 porocevalski cikel (end-to-end).
+- Finalize technology stack (frontend, backend, triplestore, queue).
+- Implement service skeletons and CI pipeline.
+- Add a test harness for SHACL/SPARQL validation.
+- Add a pilot workflow for one end-to-end reporting cycle.
