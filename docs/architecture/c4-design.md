@@ -47,13 +47,13 @@ flowchart TB
 
     U[User]:::user
 
-    subgraph PLATFORM[NAP ITS Reporter]
-        subgraph PRESENTATION[Presentation Layer]
+    subgraph PLATFORM["NAP ITS Reporter"]
+        subgraph PRESENTATION["Presentation Layer"]
             UI[Web UI\nvalidation dashboard + workflow view]:::app
             APIDOC[API Documentation Portal\nOpenAPI/Swagger]:::app
         end
 
-        subgraph LOGIC[Logical Layer (Microservices/API)]
+        subgraph LOGIC["Logical Layer (Microservices/API)"]
             BFF[API Gateway / BFF\nREST API + API contracts]:::svc
             ING[Metadata Ingestion Service\nautomated discovery + fetch + normalization]:::svc
             INTEROP[Interoperability Adapter Service\nNAP catalog + infrastructure connectors]:::svc
@@ -65,7 +65,7 @@ flowchart TB
             IAM[AuthN/AuthZ Service\nRBAC/ABAC, auditing]:::svc
         end
 
-        subgraph DATA[Data Layer]
+        subgraph DATA["Data Layer"]
             MQ[(Event Bus / Queue)]:::data
             META[(Metadata Store\nRDF triplestore)]:::data
             APPDB[(Application DB\nusers, configuration, jobs)]:::data
