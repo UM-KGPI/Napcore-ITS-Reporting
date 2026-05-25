@@ -16,23 +16,25 @@ skinparam database {
 
 actor "User" as USER
 
-rectangle "Web UI\nSPA + guided workflow" as UI #d9f2e6
-rectangle "API Gateway / BFF\nREST API + contracts" as BFF #dbeafe
+package "NAP ITS Reporter" {
+  rectangle "Web UI\nSPA + guided workflow" as UI #d9f2e6
+  rectangle "API Gateway / BFF\nREST API + contracts" as BFF #dbeafe
 
-package "Core Services" {
-  rectangle "Metadata Ingestion Service" as ING #dbeafe
-  rectangle "Compliance Validation Service" as VAL #dbeafe
-  rectangle "KPI Mapping and Analytics Service" as KPI #dbeafe
-  rectangle "Reporting Service" as REP #dbeafe
-  rectangle "Recommendation Service" as REC #dbeafe
-  rectangle "Workflow Orchestrator" as WF #dbeafe
-  rectangle "AuthN/AuthZ Service" as IAM #dbeafe
+  package "Core Services" {
+    rectangle "Metadata Ingestion Service" as ING #dbeafe
+    rectangle "Compliance Validation Service" as VAL #dbeafe
+    rectangle "KPI Mapping and Analytics Service" as KPI #dbeafe
+    rectangle "Reporting Service" as REP #dbeafe
+    rectangle "Recommendation Service" as REC #dbeafe
+    rectangle "Workflow Orchestrator" as WF #dbeafe
+    rectangle "AuthN/AuthZ Service" as IAM #dbeafe
+  }
+
+  database "Metadata Store\n(RDF triplestore)" as META
+  database "Application DB" as APPDB
+  database "Document Store" as DOCS
+  queue "Event Bus / Queue" as MQ
 }
-
-database "Metadata Store\n(RDF triplestore)" as META
-database "Application DB" as APPDB
-database "Document Store" as DOCS
-queue "Event Bus / Queue" as MQ
 
 rectangle "NAP API Endpoints" as NAP #fff3e0
 rectangle "DG MOVE Templates" as DGT #fff3e0

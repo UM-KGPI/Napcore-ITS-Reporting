@@ -13,22 +13,22 @@ flowchart LR
     classDef ext fill:#d97706,stroke:#92400e,color:#fff
     classDef user fill:#374151,stroke:#111827,color:#fff
 
-    U1[Pilotni uporabnik\nNAP analitik]:::user
+    U1[Pilot User\nNAP Analyst]:::user
     U2[Administrator]:::user
 
-    APP["Pilotna aplikacija mobilityDCAT-AP\n(Web Application)"]:::app
+    APP["NAP ITS Reporter\n(Web Application)"]:::app
 
-    NAP[NAP katalogi in API koncne tocke]:::ext
-    DGMOVE[DG MOVE predloge in porocevalske zahteve]:::ext
-    STD[mobilityDCAT-AP, RDF standardi\nJSON-LD, TTL, RDF/XML]:::ext
-    IDP[Zunanji IdP\nOIDC/SAML]:::ext
+    NAP[NAP catalogs and API endpoints]:::ext
+    DGMOVE[DG MOVE templates and reporting requirements]:::ext
+    STD[mobilityDCAT-AP and RDF standards\nJSON-LD, TTL, RDF/XML]:::ext
+    IDP[External IdP\nOIDC/SAML]:::ext
 
-    U1 -->|pregled, validacija, porocanje| APP
-    U2 -->|upravljanje sistema, pravil in dostopa| APP
-    APP -->|odkrivanje in zajem metapodatkov| NAP
-    APP -->|uporablja porocevalske predloge in KPI preslikave| DGMOVE
-    APP -->|validacijska pravila in semantika| STD
-    APP -->|avtentikacija, avtorizacija| IDP
+    U1 -->|review, validate, report| APP
+    U2 -->|manage system, rules, and access| APP
+    APP -->|discover and ingest metadata| NAP
+    APP -->|apply reporting templates and KPI mappings| DGMOVE
+    APP -->|apply validation rules and semantics| STD
+    APP -->|authentication and authorization| IDP
 ```
 
 ## 2) C4 - Container Diagram (Level 2)
@@ -41,28 +41,28 @@ flowchart TB
     classDef ext fill:#d97706,stroke:#92400e,color:#fff
     classDef user fill:#374151,stroke:#111827,color:#fff
 
-    U[Uporabnik]:::user
+    U[User]:::user
 
-    subgraph PLATFORM[Pilotna aplikacija mobilityDCAT-AP]
+    subgraph PLATFORM[NAP ITS Reporter]
         UI[Web UI\nSPA + guided workflow]:::app
         BFF[API Gateway / BFF\nREST API + API contracts]:::svc
 
-        ING[Metadata Ingestion Service\nNAP discovery, fetch, normalizacija]:::svc
-        VAL[Compliance Validation Service\npravila + SHACL/SPARQL validacija]:::svc
-        KPI[KPI Mapping & Analytics Service\npreslikave metapodatki -> KPI -> DG MOVE]:::svc
-        REP[Reporting Service\npolavtomatsko/avtomatsko ustvarjanje porocil]:::svc
-        REC[Recommendation Service\npredlogi izboljsav neskladij]:::svc
-        WF[Workflow Orchestrator\nvodenje korakov porocanja]:::svc
+        ING[Metadata Ingestion Service\nNAP discovery, fetch, normalization]:::svc
+        VAL[Compliance Validation Service\nrules + SHACL/SPARQL validation]:::svc
+        KPI[KPI Mapping & Analytics Service\nmetadata mappings -> KPI -> DG MOVE]:::svc
+        REP[Reporting Service\nsemi-automated/automated report generation]:::svc
+        REC[Recommendation Service\nnon-compliance improvement suggestions]:::svc
+        WF[Workflow Orchestrator\nreporting workflow orchestration]:::svc
         IAM[AuthN/AuthZ Service\nRBAC/ABAC, auditing]:::svc
 
         MQ[(Event Bus / Queue)]:::data
         META[(Metadata Store\nRDF triplestore)]:::data
-        APPDB[(Application DB\nuporabniki, konfiguracije, opravila)]:::data
-        DOCS[(Document Store\nporocila, export datoteke)]:::data
+        APPDB[(Application DB\nusers, configuration, jobs)]:::data
+        DOCS[(Document Store\nreports, export files)]:::data
     end
 
     NAP[NAP API endpoints]:::ext
-    DGMOVE[DG MOVE predloge]:::ext
+    DGMOVE[DG MOVE templates]:::ext
     IDP[External Identity Provider]:::ext
 
     U --> UI
@@ -110,7 +110,7 @@ flowchart LR
     ShapeEngine[SHACL Engine]:::svc
     SemanticChecks[SPARQL Semantic Checks]:::svc
     Completeness[Completeness & Consistency Checker]:::svc
-    ReportBuilder[Neskladja + priporocila\nReport Builder]:::svc
+    ReportBuilder[Non-compliance + recommendations\nReport Builder]:::svc
 
     META[(RDF Metadata Store)]:::data
     APPDB[(Application DB)]:::data

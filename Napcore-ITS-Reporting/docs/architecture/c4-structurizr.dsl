@@ -1,87 +1,87 @@
-workspace "mobilityDCAT-AP Pilot" "C4 model for the pilot web application" {
+workspace "NAP ITS Reporter" "C4 model for the web application" {
 
     model {
-        pilotAnalyst = person "Pilotni uporabnik (NAP analitik)" "Pregleduje skladnost in pripravlja porocila."
-        administrator = person "Administrator" "Upravlja pravila, konfiguracijo in dostop."
+        pilotAnalyst = person "Pilot User (NAP Analyst)" "Reviews compliance and prepares reports."
+        administrator = person "Administrator" "Manages rules, configuration, and access."
 
-        nap = softwareSystem "NAP endpoints" "Nacionalni katalogi in API koncne tocke za metapodatke."
-        dgMove = softwareSystem "DG MOVE templates" "Porocevalske predloge in KPI zahteve."
-        idp = softwareSystem "Identity Provider" "Zunanji OIDC/SAML ponudnik identitete."
+        nap = softwareSystem "NAP endpoints" "National catalogs and API endpoints for metadata."
+        dgMove = softwareSystem "DG MOVE templates" "Reporting templates and KPI requirements."
+        idp = softwareSystem "Identity Provider" "External OIDC/SAML identity provider."
 
-        pilotApp = softwareSystem "Pilotna aplikacija mobilityDCAT-AP" "Spletna aplikacija za avtomatizirano zbiranje, validacijo in porocanje metapodatkov." {
-            webUi = container "Web UI" "SPA za vodene tokove porocanja in nadzorno plosco skladnosti." "TypeScript"
-            bff = container "API Gateway/BFF" "Enotna API vstopna tocka in orkestracija zahtev iz UI." "Node.js"
+        reporter = softwareSystem "NAP ITS Reporter" "Web application for automated metadata ingestion, validation, and reporting." {
+            webUi = container "Web UI" "SPA for guided reporting workflows and compliance dashboard." "TypeScript"
+            bff = container "API Gateway/BFF" "Single API entry point and request orchestration for the UI." "Node.js"
 
-            ingestion = container "Metadata Ingestion Service" "Odkrivanje, zajem in normalizacija metapodatkov iz NAP." "Node.js"
-            validation = container "Compliance Validation Service" "Preverjanje skladnosti mobilityDCAT-AP in DG MOVE pravil." "Java"
-            kpi = container "KPI Mapping and Analytics Service" "Preslikave med metapodatki, KPI in predlogami porocanja." "Python"
-            reporting = container "Reporting Service" "Delno/polno avtomatizirano ustvarjanje porocil." "Node.js"
-            recommendation = container "Recommendation Service" "Predlogi izboljsav na podlagi findings." "Python"
-            workflow = container "Workflow Orchestrator" "Vodenje korakov guided workflow." "Node.js"
-            iam = container "AuthN/AuthZ Service" "RBAC/ABAC, auditing, policy enforcement." "Node.js"
+            ingestion = container "Metadata Ingestion Service" "Discovers, fetches, and normalizes metadata from NAP." "Node.js"
+            validation = container "Compliance Validation Service" "Validates compliance with mobilityDCAT-AP and DG MOVE rules." "Java"
+            kpi = container "KPI Mapping and Analytics Service" "Maps metadata to KPI and reporting templates." "Python"
+            reporting = container "Reporting Service" "Semi-automated and automated report generation." "Node.js"
+            recommendation = container "Recommendation Service" "Provides improvement recommendations from findings." "Python"
+            workflow = container "Workflow Orchestrator" "Orchestrates guided reporting workflow steps." "Node.js"
+            iam = container "AuthN/AuthZ Service" "RBAC/ABAC, auditing, and policy enforcement." "Node.js"
 
-            metadataStore = container "Metadata Store" "RDF triplestore za semantiko metapodatkov." "RDF store"
-            appDb = container "Application DB" "Konfiguracija, opravila, statusi, revizijske sledi." "PostgreSQL"
-            docsStore = container "Document Store" "Generirana porocila in izvozi." "Object storage"
-            eventBus = container "Event Bus" "Asinhrona integracija med storitvami." "Kafka/RabbitMQ"
+            metadataStore = container "Metadata Store" "RDF triplestore for metadata semantics." "RDF store"
+            appDb = container "Application DB" "Configuration, jobs, statuses, and audit trail." "PostgreSQL"
+            docsStore = container "Document Store" "Generated reports and export artifacts." "Object storage"
+            eventBus = container "Event Bus" "Asynchronous service integration." "Kafka/RabbitMQ"
 
-            validationController = component "Validation Controller" "REST vhod za validacijska opravila." "HTTP API"
-            validationOrchestrator = component "Validation Orchestrator" "Vodi SHACL, SPARQL in quality kontrole." "Application service"
-            ruleSetProvider = component "Rule Set Provider" "Nalaganje verzioniranih pravil." "Domain service"
-            shaclEngine = component "SHACL Engine" "SHACL validacija RDF grafov." "Validation engine"
-            sparqlEngine = component "SPARQL Rule Engine" "Semanticna pravila in cross-record kontrole." "Validation engine"
-            qualityEngine = component "Quality Checks Engine" "Popolnost, natančnost, konsistentnost." "Validation engine"
-            findingsAggregator = component "Findings Aggregator" "Normalizacija findings in izracun score." "Domain service"
-            recommendationBuilder = component "Recommendation Builder" "Priprava predlogov izboljsav." "Domain service"
+            validationController = component "Validation Controller" "REST entry point for validation jobs." "HTTP API"
+            validationOrchestrator = component "Validation Orchestrator" "Executes SHACL, SPARQL, and quality checks." "Application service"
+            ruleSetProvider = component "Rule Set Provider" "Loads versioned validation rules." "Domain service"
+            shaclEngine = component "SHACL Engine" "Runs SHACL validation on RDF graphs." "Validation engine"
+            sparqlEngine = component "SPARQL Rule Engine" "Runs semantic and cross-record checks." "Validation engine"
+            qualityEngine = component "Quality Checks Engine" "Checks completeness, accuracy, and consistency." "Validation engine"
+            findingsAggregator = component "Findings Aggregator" "Normalizes findings and calculates score." "Domain service"
+            recommendationBuilder = component "Recommendation Builder" "Builds improvement recommendations." "Domain service"
 
-            reportingController = component "Reporting Controller" "REST vhod za porocevalska opravila." "HTTP API"
-            reportingOrchestrator = component "Reporting Orchestrator" "Vodi mapiranje, generiranje in quality gate." "Application service"
-            guidedWorkflowEngine = component "Guided Workflow Engine" "Stanje korakov in navodila uporabniku." "Domain service"
-            kpiMappingEngine = component "KPI Mapping Engine" "Preslikava elementov v KPI in predloge." "Domain service"
-            templateProvider = component "Template Provider" "Upravljanje verzij DG MOVE predlog." "Integration component"
-            reportGenerator = component "Report Generator" "Sestava izhodnega porocila." "Generation engine"
-            reportQualityGate = component "Report Quality Gate" "Kontrole popolnosti in skladnosti porocila." "Policy component"
-            exportManager = component "Export Manager" "Izvoz PDF/HTML/JSON." "Output component"
+            reportingController = component "Reporting Controller" "REST entry point for reporting jobs." "HTTP API"
+            reportingOrchestrator = component "Reporting Orchestrator" "Coordinates mapping, generation, and quality gate." "Application service"
+            guidedWorkflowEngine = component "Guided Workflow Engine" "Maintains step state and user guidance." "Domain service"
+            kpiMappingEngine = component "KPI Mapping Engine" "Maps metadata elements to KPI and templates." "Domain service"
+            templateProvider = component "Template Provider" "Manages DG MOVE template versions." "Integration component"
+            reportGenerator = component "Report Generator" "Builds final reporting artifacts." "Generation engine"
+            reportQualityGate = component "Report Quality Gate" "Enforces report completeness and consistency checks." "Policy component"
+            exportManager = component "Export Manager" "Exports PDF/HTML/JSON outputs." "Output component"
         }
 
-        pilotAnalyst -> pilotApp "Uporablja za validacijo in porocanje"
-        administrator -> pilotApp "Upravlja konfiguracijo in dostop"
+        pilotAnalyst -> reporter "Uses for validation and reporting"
+        administrator -> reporter "Manages configuration and access"
 
-        pilotApp -> nap "Odkriva in zajema metapodatke"
-        pilotApp -> dgMove "Uporablja predloge porocanja"
-        pilotApp -> idp "Delegira avtentikacijo"
+        reporter -> nap "Discovers and ingests metadata"
+        reporter -> dgMove "Uses reporting templates"
+        reporter -> idp "Delegates authentication"
 
         webUi -> bff "HTTPS/JSON"
-        bff -> workflow "Klice tokov"
-        bff -> iam "Autorizacija zahtev"
+        bff -> workflow "Calls workflow APIs"
+        bff -> iam "Authorizes requests"
 
-        workflow -> ingestion "Zagon zajema"
-        workflow -> validation "Zagon validacije"
-        workflow -> kpi "Izracun KPI"
-        workflow -> reporting "Zagon porocanja"
-        workflow -> recommendation "Priprava predlogov"
+        workflow -> ingestion "Starts ingestion"
+        workflow -> validation "Starts validation"
+        workflow -> kpi "Calculates KPI"
+        workflow -> reporting "Starts reporting"
+        workflow -> recommendation "Builds recommendations"
 
         ingestion -> nap "HTTP API"
-        ingestion -> metadataStore "Shrani RDF"
+        ingestion -> metadataStore "Stores RDF"
 
-        validation -> metadataStore "Beri RDF"
-        validation -> appDb "Shrani findings"
-        validation -> eventBus "Objavi ValidationCompleted"
+        validation -> metadataStore "Reads RDF"
+        validation -> appDb "Stores findings"
+        validation -> eventBus "Publishes ValidationCompleted"
 
-        kpi -> metadataStore "Beri RDF"
-        kpi -> appDb "Shrani KPI rezultate"
-        kpi -> eventBus "Objavi KpiCalculated"
+        kpi -> metadataStore "Reads RDF"
+        kpi -> appDb "Stores KPI results"
+        kpi -> eventBus "Publishes KpiCalculated"
 
-        reporting -> dgMove "Preberi predloge"
-        reporting -> appDb "Beri KPI/Workflow podatke"
-        reporting -> docsStore "Shrani porocila"
-        reporting -> eventBus "Objavi ReportGenerated"
+        reporting -> dgMove "Reads templates"
+        reporting -> appDb "Reads KPI and workflow data"
+        reporting -> docsStore "Stores reports"
+        reporting -> eventBus "Publishes ReportGenerated"
 
-        recommendation -> appDb "Beri findings/KPI"
-        recommendation -> appDb "Shrani predloge"
+        recommendation -> appDb "Reads findings and KPI"
+        recommendation -> appDb "Stores recommendations"
 
         iam -> idp "OIDC/SAML"
-        iam -> appDb "Shrani politike in revizijo"
+        iam -> appDb "Stores policy and audit data"
 
         validationController -> validationOrchestrator "startValidation"
         validationOrchestrator -> ruleSetProvider "loadRules"
@@ -91,30 +91,30 @@ workspace "mobilityDCAT-AP Pilot" "C4 model for the pilot web application" {
         shaclEngine -> findingsAggregator "findings"
         sparqlEngine -> findingsAggregator "findings"
         qualityEngine -> findingsAggregator "findings"
-        findingsAggregator -> recommendationBuilder "derive recommendations"
-        findingsAggregator -> appDb "persist summary"
-        recommendationBuilder -> appDb "persist recommendations"
+        findingsAggregator -> recommendationBuilder "deriveRecommendations"
+        findingsAggregator -> appDb "persistSummary"
+        recommendationBuilder -> appDb "persistRecommendations"
 
         reportingController -> reportingOrchestrator "startReport"
-        reportingOrchestrator -> guidedWorkflowEngine "resolve step state"
-        reportingOrchestrator -> kpiMappingEngine "resolve mappings"
-        reportingOrchestrator -> templateProvider "load template"
+        reportingOrchestrator -> guidedWorkflowEngine "resolveStepState"
+        reportingOrchestrator -> kpiMappingEngine "resolveMappings"
+        reportingOrchestrator -> templateProvider "loadTemplate"
         reportingOrchestrator -> reportGenerator "generate"
         reportingOrchestrator -> reportQualityGate "validate"
         reportingOrchestrator -> exportManager "export"
-        templateProvider -> dgMove "retrieve versions"
-        reportGenerator -> docsStore "write draft/final"
-        exportManager -> docsStore "write exports"
-        reportQualityGate -> appDb "persist quality results"
+        templateProvider -> dgMove "retrieveVersions"
+        reportGenerator -> docsStore "writeDraftAndFinal"
+        exportManager -> docsStore "writeExports"
+        reportQualityGate -> appDb "persistQualityResults"
     }
 
     views {
-        systemContext pilotApp "SystemContext" {
+        systemContext reporter "SystemContext" {
             include *
             autoLayout lr
         }
 
-        container pilotApp "Container" {
+        container reporter "Container" {
             include *
             autoLayout tb
         }
