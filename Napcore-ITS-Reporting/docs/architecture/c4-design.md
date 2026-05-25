@@ -1,6 +1,6 @@
 # NAP ITS Reporter - C4 Architecture Design
 
-This document provides the initial C4 architecture design for the web application based on the contract requirements.
+This document provides the initial C4 architecture design for the web application based on the requirements.
 
 ## Pattern and Principles
 
