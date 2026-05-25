@@ -17,44 +17,57 @@ skinparam database {
 actor "User" as USER
 
 package "NAP ITS Reporter" {
-  rectangle "Web UI\nSPA + guided workflow" as UI #d9f2e6
-  rectangle "API Gateway / BFF\nREST API + contracts" as BFF #dbeafe
+  package "Presentation Layer" {
+    rectangle "Web UI\nvalidation dashboard + workflow view" as UI #d9f2e6
+    rectangle "API Documentation Portal\nOpenAPI/Swagger" as APIDOC #d9f2e6
+  }
 
-  package "Core Services" {
-    rectangle "Metadata Ingestion Service" as ING #dbeafe
-    rectangle "Compliance Validation Service" as VAL #dbeafe
-    rectangle "KPI Mapping and Analytics Service" as KPI #dbeafe
-    rectangle "Reporting Service" as REP #dbeafe
-    rectangle "Recommendation Service" as REC #dbeafe
-    rectangle "Workflow Orchestrator" as WF #dbeafe
+  package "Logical Layer (Microservices/API)" {
+    rectangle "API Gateway / BFF\nREST API + contracts" as BFF #dbeafe
+    rectangle "Metadata Ingestion Service\nautomated discovery + fetch + normalization" as ING #dbeafe
+    rectangle "Interoperability Adapter Service\nNAP catalog + infrastructure connectors" as INTEROP #dbeafe
+    rectangle "Compliance Validation Service\ncompleteness + accuracy + consistency checks" as VAL #dbeafe
+    rectangle "KPI Mapping and Analytics Service\nmetadata -> KPI -> DG MOVE mappings" as KPI #dbeafe
+    rectangle "Reporting Service\nguided + semi-auto + full-auto reporting" as REP #dbeafe
+    rectangle "Recommendation Service\nnon-compliance improvement suggestions" as REC #dbeafe
+    rectangle "Workflow Orchestrator\nend-to-end reporting workflow" as WF #dbeafe
     rectangle "AuthN/AuthZ Service" as IAM #dbeafe
   }
 
-  database "Metadata Store\n(RDF triplestore)" as META
-  database "Application DB" as APPDB
-  database "Document Store" as DOCS
-  queue "Event Bus / Queue" as MQ
+  package "Data Layer" {
+    database "Metadata Store\n(RDF triplestore)" as META
+    database "Application DB" as APPDB
+    database "Document Store\nreports + compliance outputs" as DOCS
+    queue "Event Bus / Queue" as MQ
+  }
 }
 
-rectangle "NAP API Endpoints" as NAP #fff3e0
+rectangle "NAP Catalog and API Endpoints" as NAP #fff3e0
+rectangle "Infrastructure Services" as INFRA #fff3e0
 rectangle "DG MOVE Templates" as DGT #fff3e0
 rectangle "External IdP" as IDP #fff3e0
 
 USER --> UI
 UI --> BFF
+USER --> APIDOC
+APIDOC --> BFF
 BFF --> IAM
 BFF --> WF
 
 WF --> ING
+WF --> INTEROP
 WF --> VAL
 WF --> KPI
 WF --> REP
 WF --> REC
 
-ING --> NAP
+ING --> INTEROP
+INTEROP --> NAP
+INTEROP --> INFRA
 ING --> META
 VAL --> META
 VAL --> APPDB
+VAL --> DOCS
 KPI --> META
 KPI --> APPDB
 REP --> DGT

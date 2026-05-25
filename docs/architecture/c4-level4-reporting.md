@@ -7,6 +7,7 @@ This document describes the internal (code-level) design of the microservice for
 - Manages a guided reporting workflow.
 - Maps metadata elements to KPI and DG MOVE templates.
 - Supports partially or fully automated report generation.
+- Provides documentation-ready report outputs and exports.
 
 ## Module View
 
@@ -21,7 +22,9 @@ flowchart TB
     ORCH[ReportingOrchestrator]:::mod
     GUIDE[GuidedWorkflowEngine]:::mod
     MAP[KpiMappingEngine]:::mod
+    DGMAP[DgMoveTemplateMapper]:::mod
     TPL[TemplateProvider]:::mod
+    AUTO[AutomationModePlanner]:::mod
     GEN[ReportGenerator]:::mod
     QA[ReportQualityGate]:::mod
     EXP[ExportManager]:::mod
@@ -36,7 +39,9 @@ flowchart TB
     AUTH --> ORCH
     ORCH --> GUIDE
     ORCH --> MAP
+    ORCH --> DGMAP
     ORCH --> TPL
+    ORCH --> AUTO
     ORCH --> GEN
     ORCH --> QA
     ORCH --> EXP
@@ -44,7 +49,9 @@ flowchart TB
 
     GUIDE --> APPDB
     MAP --> APPDB
+    DGMAP --> DGMOVE
     TPL --> DGMOVE
+    AUTO --> APPDB
     GEN --> DOCS
     QA --> APPDB
     EXP --> DOCS
@@ -59,6 +66,8 @@ sequenceDiagram
     participant API as ReportingController
     participant ORCH as ReportingOrchestrator
     participant MAP as KpiMappingEngine
+    participant DGMAP as DgMoveTemplateMapper
+    participant AUTO as AutomationModePlanner
     participant GEN as ReportGenerator
     participant QA as ReportQualityGate
     participant DOCS as DocumentStore
@@ -66,7 +75,10 @@ sequenceDiagram
     UI->>API: POST /reports (period, scope, mode)
     API->>ORCH: startReportGeneration(cmd)
     ORCH->>MAP: resolve KPI mappings
+    ORCH->>DGMAP: resolve DG MOVE template mapping
+    ORCH->>AUTO: select mode (guided/semi/auto)
     MAP-->>ORCH: mapped indicators
+    DGMAP-->>ORCH: mapped template fields
     ORCH->>GEN: generate draft report
     GEN-->>ORCH: draft artifact
     ORCH->>QA: validate report quality/completeness
@@ -81,7 +93,9 @@ sequenceDiagram
 - ReportingController: API for starting report generation, checking status, and downloading exports.
 - GuidedWorkflowEngine: guides users through steps and validates required inputs.
 - KpiMappingEngine: maps mobilityDCAT-AP elements to KPI and templates.
+- DgMoveTemplateMapper: maps KPI outputs into DG MOVE template fields.
 - TemplateProvider: manages DG MOVE template versions.
+- AutomationModePlanner: applies guided, semi-automatic, or full-automatic generation mode.
 - ReportGenerator: composes report outputs (narrative + tables + indicators).
 - ReportQualityGate: validates completeness, compliance, and output consistency.
 - ExportManager: exports outputs to PDF/HTML/JSON.
