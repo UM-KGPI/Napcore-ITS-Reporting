@@ -2,9 +2,11 @@
 
 This document provides the initial C4 architecture design for the web application based on the contract requirements.
 
-## Architecture Pattern
+## Pattern and Principles
 
-The central registry not only interlinks heterogeneous NAPs, but also provides searchable, explainable, and continuously updated discovery of NAP endpoints, datasets, and cross-NAP relationships, implementing a Federated Registry and Discoverability architecture for cross-NAP interoperability.
+Primary pattern: Federated Registry and Discoverability architecture for cross-NAP interoperability.
+
+The central registry not only interlinks heterogeneous NAPs, but also provides searchable, explainable, and continuously updated discovery of NAP endpoints, datasets, and cross-NAP relationships.
 
 ## 1) C4 - System Context (Level 1)
 
@@ -22,6 +24,7 @@ flowchart LR
     U3[Technical Integrator]:::user
 
     APP["NAP ITS Reporter\n(Web Application)"]:::app
+    PATTERN["Federated Registry and Discoverability architecture for cross-NAP interoperability"]:::system
 
     NAP[NAP catalog and API endpoints]:::ext
     INFRA[Infrastructure services\nregistry, storage, messaging]:::ext
@@ -32,6 +35,7 @@ flowchart LR
     U1 -->|review, validate, report| APP
     U2 -->|manage system, rules, and access| APP
     U3 -->|uses API contracts and documentation| APP
+    APP -.implements.-> PATTERN
     APP -->|interlink heterogeneous NAPs and discover endpoints, datasets, and relations| NAP
     APP -->|interoperable integrations| INFRA
     APP -->|apply reporting templates and KPI mappings| DGMOVE
@@ -60,7 +64,8 @@ flowchart TB
         subgraph LOGIC["Logical Layer (Microservices/API)"]
             BFF[API Gateway / BFF\nREST API + API contracts]:::svc
             ING[Metadata Ingestion Service\nautomated discovery + fetch + normalization]:::svc
-            REGDISC[Federated Registry & Discoverability Service\nNAP interlinking + searchable/explainable discovery]:::svc
+            REGDISC[Federated Registry and Discoverability Service\nfor cross-NAP interoperability]:::svc
+            PATTERN2["Federated Registry and Discoverability architecture for cross-NAP interoperability"]:::system
             VAL[Compliance Validation Service\ncompleteness + accuracy + consistency checks]:::svc
             KPI[KPI Mapping & Analytics Service\nmetadata -> KPI -> DG MOVE mappings]:::svc
             REP[Reporting Service\nguided + semi-auto + full-auto reporting]:::svc
@@ -96,6 +101,7 @@ flowchart TB
     WF --> REC
 
     ING --> REGDISC
+    REGDISC -.implements.-> PATTERN2
     REGDISC --> NAP
     REGDISC --> INFRA
     ING --> META

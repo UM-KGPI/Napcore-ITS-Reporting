@@ -3,12 +3,16 @@ info:
   title: mobilityDCAT-AP Pilot BFF API
   version: 0.1.0
   description: |
-    Initial API contract for the web application's Backend-for-Frontend layer.
+    Initial API contract for the web application's Backend-for-Frontend layer,
+    implementing a Federated Registry and Discoverability architecture for cross-NAP interoperability.
 servers:
   - url: https://pilot.example.eu/api
     description: Pilot environment
 tags:
   - name: Ingestion
+  - name: Registry
+  - name: Search
+  - name: Relations
   - name: Validation
   - name: Reporting
   - name: Workflow
@@ -157,6 +161,109 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Recommendation'
+  /registry/naps:
+    get:
+      tags: [Registry]
+      summary: List registered NAP endpoints and profiles
+      operationId: listRegisteredNaps
+      responses:
+        '200':
+          description: Registry entries
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/NapRegistryEntry'
+  /registry/naps/{napId}:
+    get:
+      tags: [Registry]
+      summary: Get NAP registry entry details
+      operationId: getRegistryNap
+      parameters:
+        - $ref: '#/components/parameters/NapId'
+      responses:
+        '200':
+          description: Registry entry details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NapRegistryEntry'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /search:
+    get:
+      tags: [Search]
+      summary: Search endpoints, datasets, and cross-NAP links
+      operationId: searchRegistry
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [nap, endpoint, dataset, relation]
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SearchResult'
+  /relations:
+    get:
+      tags: [Relations]
+      summary: List cross-NAP relations
+      operationId: listRelations
+      parameters:
+        - name: sourceNapId
+          in: query
+          schema:
+            type: string
+        - name: targetNapId
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Relation list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RegistryRelation'
+  /relations/{relationId}:
+    get:
+      tags: [Relations]
+      summary: Get a specific cross-NAP relation
+      operationId: getRelation
+      parameters:
+        - $ref: '#/components/parameters/RelationId'
+      responses:
+        '200':
+          description: Relation details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegistryRelation'
+        '404':
+          $ref: '#/components/responses/NotFound'
 components:
   parameters:
     ValidationId:
@@ -167,6 +274,18 @@ components:
         type: string
     ReportId:
       name: reportId
+      in: path
+      required: true
+      schema:
+        type: string
+    NapId:
+      name: napId
+      in: path
+      required: true
+      schema:
+        type: string
+    RelationId:
+      name: relationId
       in: path
       required: true
       schema:
@@ -310,6 +429,57 @@ components:
         text:
           type: string
         relatedRule:
+          type: string
+    NapRegistryEntry:
+      type: object
+      required: [napId, name, endpointUrl, supportedFormats, lastUpdated]
+      properties:
+        napId:
+          type: string
+        name:
+          type: string
+        endpointUrl:
+          type: string
+          format: uri
+        supportedFormats:
+          type: array
+          items:
+            type: string
+            enum: [json-ld, ttl, rdf-xml]
+        lastUpdated:
+          type: string
+          format: date-time
+        explainabilityNote:
+          type: string
+    SearchResult:
+      type: object
+      required: [id, type, title]
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum: [nap, endpoint, dataset, relation]
+        title:
+          type: string
+        snippet:
+          type: string
+        score:
+          type: number
+    RegistryRelation:
+      type: object
+      required: [relationId, sourceNapId, targetNapId, relationType]
+      properties:
+        relationId:
+          type: string
+        sourceNapId:
+          type: string
+        targetNapId:
+          type: string
+        relationType:
+          type: string
+          enum: [equivalent, related, dependency, derived]
+        explanation:
           type: string
     ErrorResponse:
       type: object

@@ -19,6 +19,7 @@ actor "Administrator" as U2
 actor "Technical Integrator" as U3
 
 rectangle "NAP ITS Reporter\n(Web Application)" as APP #d9f2e6
+rectangle "Federated Registry and Discoverability architecture for cross-NAP interoperability" as PATTERN #eef5ff
 
 rectangle "NAP Catalog and API Endpoints" as NAP #fff3e0
 rectangle "Infrastructure Services\n(registry, storage, messaging)" as INFRA #fff3e0
@@ -29,6 +30,7 @@ rectangle "External Identity Provider\n(OIDC/SAML)" as IDP #fff3e0
 U1 --> APP : review, validate, report
 U2 --> APP : administer rules and access
 U3 --> APP : use API contracts and docs
+APP ..> PATTERN : implements
 
 APP --> NAP : interlink heterogeneous NAPs and discover endpoints/datasets/relations
 APP --> INFRA : interoperable integrations

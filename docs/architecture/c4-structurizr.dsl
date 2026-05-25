@@ -1,4 +1,4 @@
-workspace "NAP ITS Reporter" "C4 model for the web application using a Federated Registry and Discoverability architecture" {
+workspace "NAP ITS Reporter" "C4 model for the web application using a Federated Registry and Discoverability architecture for cross-NAP interoperability" {
 
     model {
         pilotAnalyst = person "Pilot User (NAP Analyst)" "Reviews compliance and prepares reports."
@@ -16,7 +16,7 @@ workspace "NAP ITS Reporter" "C4 model for the web application using a Federated
             bff = container "API Gateway/BFF" "Single API entry point and request orchestration for the UI." "Node.js"
 
             ingestion = container "Metadata Ingestion Service" "Discovers, fetches, and normalizes metadata from NAP in JSON-LD, TTL, and RDF/XML formats." "Node.js"
-            registryDiscoverability = container "Federated Registry and Discoverability Service" "Interlinks heterogeneous NAPs and provides searchable, explainable, continuously updated discovery of endpoints, datasets, and cross-NAP relationships." "Node.js"
+            registryDiscoverability = container "Federated Registry and Discoverability Service" "Implements the Federated Registry and Discoverability architecture for cross-NAP interoperability by interlinking heterogeneous NAPs and providing searchable, explainable, continuously updated discovery of endpoints, datasets, and cross-NAP relationships." "Node.js"
             validation = container "Compliance Validation Service" "Validates compliance with mobilityDCAT-AP and DG MOVE rules including completeness, accuracy, and consistency checks." "Java"
             kpi = container "KPI Mapping and Analytics Service" "Maps metadata to KPI and reporting templates." "Python"
             reporting = container "Reporting Service" "Guided, semi-automated, and automated report generation." "Node.js"
