@@ -17,6 +17,8 @@ skinparam database {
 actor "User" as USER
 
 package "NAP ITS Reporter" {
+  rectangle "Federated Registry and Discoverability architecture for cross-NAP interoperability" as PATTERN #eef5ff
+
   package "Presentation Layer" {
     rectangle "Web UI\nvalidation dashboard + workflow view" as UI #d9f2e6
     rectangle "API Documentation Portal\nOpenAPI/Swagger" as APIDOC #d9f2e6
@@ -25,7 +27,7 @@ package "NAP ITS Reporter" {
   package "Logical Layer (Microservices/API)" {
     rectangle "API Gateway / BFF\nREST API + contracts" as BFF #dbeafe
     rectangle "Metadata Ingestion Service\nautomated discovery + fetch + normalization" as ING #dbeafe
-    rectangle "Federated Registry and Discoverability Service\nNAP interlinking + searchable/explainable discovery" as REGDISC #dbeafe
+    rectangle "Federated Registry and Discoverability Service\nfor cross-NAP interoperability" as REGDISC #dbeafe
     rectangle "Compliance Validation Service\ncompleteness + accuracy + consistency checks" as VAL #dbeafe
     rectangle "KPI Mapping and Analytics Service\nmetadata -> KPI -> DG MOVE mappings" as KPI #dbeafe
     rectangle "Reporting Service\nguided + semi-auto + full-auto reporting" as REP #dbeafe
@@ -62,6 +64,7 @@ WF --> REP
 WF --> REC
 
 ING --> REGDISC
+REGDISC ..> PATTERN : implements
 REGDISC --> NAP
 REGDISC --> INFRA
 ING --> META
