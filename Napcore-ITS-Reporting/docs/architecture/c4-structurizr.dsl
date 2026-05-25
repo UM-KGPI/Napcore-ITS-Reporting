@@ -1,9 +1,9 @@
-workspace "NAP ITS Reporter" "C4 model for the web application" {
+workspace "NAP ITS Reporter" "C4 model for the web application using a Federated Registry and Discoverability architecture" {
 
     model {
         pilotAnalyst = person "Pilot User (NAP Analyst)" "Reviews compliance and prepares reports."
         administrator = person "Administrator" "Manages rules, configuration, and access."
-        technicalIntegrator = person "Technical Integrator" "Uses API contracts and integration documentation."
+        technicalIntegrator = person "Technical Integrator" "Uses API contracts and discoverability APIs/documentation."
 
         nap = softwareSystem "NAP endpoints" "NAP catalog and API endpoints for metadata."
         infra = softwareSystem "Infrastructure services" "Registry, storage, and messaging infrastructure services."
@@ -16,7 +16,7 @@ workspace "NAP ITS Reporter" "C4 model for the web application" {
             bff = container "API Gateway/BFF" "Single API entry point and request orchestration for the UI." "Node.js"
 
             ingestion = container "Metadata Ingestion Service" "Discovers, fetches, and normalizes metadata from NAP in JSON-LD, TTL, and RDF/XML formats." "Node.js"
-            interoperability = container "Interoperability Adapter Service" "Integration modules for NAP catalog and infrastructure services." "Node.js"
+            registryDiscoverability = container "Federated Registry and Discoverability Service" "Interlinks heterogeneous NAPs and provides searchable, explainable, continuously updated discovery of endpoints, datasets, and cross-NAP relationships." "Node.js"
             validation = container "Compliance Validation Service" "Validates compliance with mobilityDCAT-AP and DG MOVE rules including completeness, accuracy, and consistency checks." "Java"
             kpi = container "KPI Mapping and Analytics Service" "Maps metadata to KPI and reporting templates." "Python"
             reporting = container "Reporting Service" "Guided, semi-automated, and automated report generation." "Node.js"
@@ -53,7 +53,7 @@ workspace "NAP ITS Reporter" "C4 model for the web application" {
 
         pilotAnalyst -> reporter "Uses for validation and reporting"
         administrator -> reporter "Manages configuration and access"
-        technicalIntegrator -> reporter "Uses API documentation and contracts"
+        technicalIntegrator -> reporter "Uses API documentation, contracts, and discovery capabilities"
 
         reporter -> nap "Discovers and ingests metadata"
         reporter -> infra "Integrates with infrastructure services"
@@ -67,15 +67,15 @@ workspace "NAP ITS Reporter" "C4 model for the web application" {
         bff -> iam "Authorizes requests"
 
         workflow -> ingestion "Starts ingestion"
-        workflow -> interoperability "Calls integration modules"
+        workflow -> registryDiscoverability "Calls interlinking and discovery services"
         workflow -> validation "Starts validation"
         workflow -> kpi "Calculates KPI"
         workflow -> reporting "Starts reporting"
         workflow -> recommendation "Builds recommendations"
 
-        ingestion -> interoperability "Uses ingestion connectors"
-        interoperability -> nap "HTTP API"
-        interoperability -> infra "Infrastructure APIs"
+        ingestion -> registryDiscoverability "Uses ingestion and discovery connectors"
+        registryDiscoverability -> nap "HTTP API"
+        registryDiscoverability -> infra "Infrastructure APIs"
         ingestion -> metadataStore "Stores RDF"
 
         validation -> metadataStore "Reads RDF"
