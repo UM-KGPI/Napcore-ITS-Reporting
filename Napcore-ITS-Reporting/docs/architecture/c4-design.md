@@ -19,7 +19,7 @@ flowchart LR
     classDef ext fill:#d97706,stroke:#92400e,color:#fff
     classDef user fill:#374151,stroke:#111827,color:#fff
 
-    U[NAP operator]:::user
+    U[Member state / NAP operator]:::user
 
     APP["NAP ITS Reporter\n(Web Application)"]:::app
     PATTERN["Federated Registry and Discoverability architecture for cross-NAP interoperability"]:::system
@@ -47,7 +47,7 @@ flowchart TB
     classDef ext fill:#d97706,stroke:#92400e,color:#fff
     classDef user fill:#374151,stroke:#111827,color:#fff
 
-    U[NAP operator]:::user
+    U[Member state / NAP operator]:::user
 
     subgraph PLATFORM["NAP ITS Reporter"]
         subgraph PRESENTATION["Presentation Layer"]
