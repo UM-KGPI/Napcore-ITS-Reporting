@@ -8,7 +8,6 @@ workspace "NAP ITS Reporter" "C4 model for the web application using a Federated
         nap = softwareSystem "NAP endpoints" "NAP catalog and API endpoints for metadata."
         infra = softwareSystem "Infrastructure services" "Registry, storage, and messaging infrastructure services."
         dgMove = softwareSystem "DG MOVE templates" "Reporting templates and KPI requirements."
-        idp = softwareSystem "Identity Provider" "External OIDC/SAML identity provider."
 
         reporter = softwareSystem "NAP ITS Reporter" "Web application for automated metadata ingestion, validation, and reporting." {
             webUi = container "Web UI" "SPA for guided reporting workflows, compliance dashboard, and non-compliance visualization." "TypeScript"
@@ -58,7 +57,6 @@ workspace "NAP ITS Reporter" "C4 model for the web application using a Federated
         reporter -> nap "Discovers and ingests metadata"
         reporter -> infra "Integrates with infrastructure services"
         reporter -> dgMove "Uses reporting templates"
-        reporter -> idp "Delegates authentication"
 
         webUi -> bff "HTTPS/JSON"
         technicalIntegrator -> apiDocs "Reads endpoint docs"
@@ -95,7 +93,6 @@ workspace "NAP ITS Reporter" "C4 model for the web application using a Federated
         recommendation -> appDb "Reads findings and KPI"
         recommendation -> appDb "Stores recommendations"
 
-        iam -> idp "OIDC/SAML"
         iam -> appDb "Stores policy and audit data"
 
         validationController -> validationOrchestrator "startValidation"

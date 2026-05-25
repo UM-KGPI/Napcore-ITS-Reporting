@@ -25,7 +25,6 @@ rectangle "NAP Catalog and API Endpoints" as NAP #fff3e0
 rectangle "Infrastructure Services\n(registry, storage, messaging)" as INFRA #fff3e0
 rectangle "DG MOVE Templates\nand Reporting Requirements" as DGMOVE #fff3e0
 rectangle "mobilityDCAT-AP and RDF Standards\n(JSON-LD, TTL, RDF/XML)" as STD #fff3e0
-rectangle "External Identity Provider\n(OIDC/SAML)" as IDP #fff3e0
 
 U1 --> APP : review, validate, report
 U2 --> APP : administer rules and access
@@ -36,5 +35,4 @@ APP --> NAP : interlink heterogeneous NAPs and discover endpoints/datasets/relat
 APP --> INFRA : interoperable integrations
 APP --> DGMOVE : apply templates and KPI mapping
 APP --> STD : apply validation semantics
-APP --> IDP : authenticate and authorize users
 @enduml
