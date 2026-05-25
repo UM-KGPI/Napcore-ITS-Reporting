@@ -65,7 +65,8 @@ flowchart TB
 
 ```mermaid
 sequenceDiagram
-    participant UI as BFF/UI
+    participant UI as Web UI
+    participant BFF as API Gateway / BFF
     participant API as ReportingController
     participant ORCH as ReportingOrchestrator
     participant MAP as KpiMappingEngine
@@ -75,7 +76,8 @@ sequenceDiagram
     participant QA as ReportQualityGate
     participant DOCS as DocumentStore
 
-    UI->>API: POST /reports (period, scope, mode)
+    UI->>BFF: Start report generation
+    BFF->>API: POST /reports (period, scope, mode)
     API->>ORCH: startReportGeneration(cmd)
     ORCH->>MAP: resolve KPI mappings
     ORCH->>DGMAP: resolve DG MOVE template mapping
@@ -88,7 +90,8 @@ sequenceDiagram
     QA-->>ORCH: pass + warnings
     ORCH->>DOCS: save final report versions
     ORCH-->>API: reportId
-    API-->>UI: 202 Accepted
+    API-->>BFF: 202 Accepted (reportId)
+    BFF-->>UI: 202 Accepted (reportId)
 ```
 
 ## Key Internal Components
