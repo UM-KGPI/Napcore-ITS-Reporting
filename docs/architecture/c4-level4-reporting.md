@@ -1,14 +1,14 @@
 # C4 Level 4 - Reporting Service
 
-Ta dokument opisuje notranjo (code-level) zasnovo mikroservisa za pripravo porocil DG MOVE na podlagi zbranih in validiranih metapodatkov.
+This document describes the internal (code-level) design of the microservice for DG MOVE report preparation based on collected and validated metadata.
 
-## Namen
+## Purpose
 
-- Upravljanje vodnega (guided) porocevalskega toka.
-- Preslikava metapodatkovnih elementov v KPI in DG MOVE predloge.
-- Delno ali v celoti avtomatizirana izdelava porocil.
+- Manages a guided reporting workflow.
+- Maps metadata elements to KPI and DG MOVE templates.
+- Supports partially or fully automated report generation.
 
-## Modulni pogled
+## Module View
 
 ```mermaid
 flowchart TB
@@ -51,7 +51,7 @@ flowchart TB
     PUB --> BUS
 ```
 
-## Primarni runtime tok (sekvenca)
+## Primary Runtime Flow (Sequence)
 
 ```mermaid
 sequenceDiagram
@@ -76,26 +76,26 @@ sequenceDiagram
     API-->>UI: 202 Accepted
 ```
 
-## Kljucne notranje komponente
+## Key Internal Components
 
-- ReportingController: API za zagon porocila, pregled statusa, prevzem exportov.
-- GuidedWorkflowEngine: vodi uporabnika po korakih in preverja obvezna polja.
-- KpiMappingEngine: mapira mobilityDCAT-AP elemente v KPI in predloge.
-- TemplateProvider: upravlja verzije predlog DG MOVE.
-- ReportGenerator: sestavi porocilo (narrative + tabele + kazalniki).
-- ReportQualityGate: kontrola popolnosti, skladnosti in konsistentnosti outputa.
-- ExportManager: izvoz v PDF/HTML/JSON.
+- ReportingController: API for starting report generation, checking status, and downloading exports.
+- GuidedWorkflowEngine: guides users through steps and validates required inputs.
+- KpiMappingEngine: maps mobilityDCAT-AP elements to KPI and templates.
+- TemplateProvider: manages DG MOVE template versions.
+- ReportGenerator: composes report outputs (narrative + tables + indicators).
+- ReportQualityGate: validates completeness, compliance, and output consistency.
+- ExportManager: exports outputs to PDF/HTML/JSON.
 
-## Predlagane kode pogodbe (notranje)
+## Proposed Internal Code Contracts
 
 - Command: StartReportGenerationCommand
 - Query: GetReportStatusQuery
 - Event: ReportGenerated, ReportPublished
 - DTO: ReportSummaryDto, KpiSnapshotDto
 
-## Nefunkcionalne zahteve
+## Non-Functional Requirements
 
-- Podpora za delni in polni avtomatski nacin (manual assist / auto).
-- Verzije porocil in ponovljivost generiranja.
-- Audit trail sprememb po korakih workflow.
-- Cilj odziva API za oddajo porocila: < 300 ms (p95).
+- Support for partial and full automatic modes (manual assist / auto).
+- Report versioning and reproducible generation.
+- Audit trail of changes per workflow step.
+- API response target for report submission: < 300 ms (p95).

@@ -1,14 +1,14 @@
 # C4 Level 4 - Compliance Validation Service
 
-Ta dokument opisuje notranjo (code-level) zasnovo mikroservisa za avtomatsko preverjanje skladnosti mobilityDCAT-AP metapodatkov.
+This document describes the internal (code-level) design of the microservice for automated mobilityDCAT-AP metadata compliance validation.
 
-## Namen
+## Purpose
 
-- Sprejme validacijsko opravilo za en ali vec metapodatkovnih zapisov.
-- Izvede sintakticne, semanticne in poslovne kontrole.
-- Shrani rezultat validacije in izpostavi porocilo za UI ter porocevalski tok.
+- Accepts a validation job for one or more metadata records.
+- Executes syntactic, semantic, and business validation checks.
+- Persists validation results and exposes reports for the UI and reporting workflow.
 
-## Modulni pogled
+## Module View
 
 ```mermaid
 flowchart TB
@@ -56,7 +56,7 @@ flowchart TB
     PUB --> BUS
 ```
 
-## Primarni runtime tok (sekvenca)
+## Primary Runtime Flow (Sequence)
 
 ```mermaid
 sequenceDiagram
@@ -80,27 +80,27 @@ sequenceDiagram
     API-->>UI: 202 Accepted
 ```
 
-## Kljuicne notranje komponente
+## Key Internal Components
 
-- ValidationController: REST vhod, validacija payload in idempotency key.
-- ValidationOrchestrator: orkestracija vseh korakov validacije.
-- RuleSetProvider: nalaganje verzioniranih pravil mobilityDCAT-AP in DG MOVE.
-- ShaclValidationEngine: SHACL shape kontrole.
-- SparqlRuleEngine: semanticna pravila in cross-record kontrole.
-- QualityChecksEngine: popolnost, konsistentnost, formatna pravilnost, unikatnost.
-- ResultAggregator: normalizacija findings in izracun skupnega compliance score.
-- RecommendationBuilder: predlogi izboljsav po tipu napake.
+- ValidationController: REST entry point, payload validation, and idempotency key handling.
+- ValidationOrchestrator: orchestration of all validation stages.
+- RuleSetProvider: loading versioned mobilityDCAT-AP and DG MOVE rule sets.
+- ShaclValidationEngine: SHACL shape validation checks.
+- SparqlRuleEngine: semantic rules and cross-record checks.
+- QualityChecksEngine: completeness, consistency, format correctness, and uniqueness checks.
+- ResultAggregator: finding normalization and overall compliance score calculation.
+- RecommendationBuilder: improvement suggestions per error type.
 
-## Predlagane kode pogodbe (notranje)
+## Proposed Internal Code Contracts
 
 - Command: StartValidationCommand
 - Query: GetValidationStatusQuery
 - Event: ValidationCompleted, ValidationFailed
 - DTO: ValidationFindingDto, ValidationSummaryDto
 
-## Nefunkcionalne zahteve
+## Non-Functional Requirements
 
-- Asinhrono izvajanje (queue-based) za vecje pakete metapodatkov.
-- Deterministicni rezultati za isti vhod + isti profil pravil.
-- Popolna sledljivost (audit trail) in verzioniranje pravil.
-- Cilj odziva API za oddajo opravila: < 300 ms (p95).
+- Asynchronous execution (queue-based) for larger metadata batches.
+- Deterministic results for the same input and same rule profile.
+- Full traceability (audit trail) and rule versioning.
+- API response target for job submission: < 300 ms (p95).
