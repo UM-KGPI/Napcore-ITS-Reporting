@@ -183,3 +183,14 @@ flowchart LR
 - Definicija C4 Level 4 za preostale storitve (Ingestion, Workflow, IAM).
 - Definicija podatkovnega modela (RDF named graphs + relacijski model za workflow stanje).
 - Priprava testne strategije (unit/integration/system/performance) po modulu.
+
+## 7) PUML in SVG diagrami
+
+- PUML System Context: `docs/architecture/puml/system-context.puml`
+- SVG System Context: `docs/architecture/svg/system-context.svg`
+- PUML Container: `docs/architecture/puml/container.puml`
+- SVG Container: `docs/architecture/svg/container.svg`
+- PUML Validation Components: `docs/architecture/puml/validation-components.puml`
+- SVG Validation Components: `docs/architecture/svg/validation-components.svg`
+- PUML Reporting Components: `docs/architecture/puml/reporting-components.puml`
+- SVG Reporting Components: `docs/architecture/svg/reporting-components.svg`

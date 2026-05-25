@@ -1,0 +1,47 @@
+@startuml
+' Reporting Service Components (Level 3/4)
+skinparam shadowing false
+skinparam componentStyle rectangle
+left to right direction
+
+skinparam component {
+  BackgroundColor #dbeafe
+  BorderColor #1e3a8a
+}
+skinparam database {
+  BackgroundColor #f3e8ff
+  BorderColor #6b21a8
+}
+
+component "Reporting API" as RAPI
+component "Reporting Orchestrator" as ORCH
+component "Guided Workflow Engine" as GUIDE
+component "KPI Mapping Engine" as MAP
+component "Template Provider" as TPL
+component "Report Generator" as GEN
+component "Report Quality Gate" as QA
+component "Export Manager" as EXP
+component "Event Publisher" as PUB
+
+database "Application DB" as APPDB
+database "Document Store" as DOCS
+queue "Event Bus" as BUS
+component "DG MOVE Template Source" as DGMOVE #fff3e0
+
+RAPI --> ORCH
+ORCH --> GUIDE
+ORCH --> MAP
+ORCH --> TPL
+ORCH --> GEN
+ORCH --> QA
+ORCH --> EXP
+ORCH --> PUB
+
+GUIDE --> APPDB
+MAP --> APPDB
+TPL --> DGMOVE
+GEN --> DOCS
+QA --> APPDB
+EXP --> DOCS
+PUB --> BUS
+@enduml
