@@ -17,7 +17,7 @@ skinparam actor {
 actor "Pilot User\n(NAP Analyst)" as U1
 actor "Administrator" as U2
 
-rectangle "Pilotna aplikacija mobilityDCAT-AP\n(Web Application)" as APP #d9f2e6
+rectangle "NAP ITS Reporter\n(Web Application)" as APP #d9f2e6
 
 rectangle "NAP Catalogs and API Endpoints" as NAP #fff3e0
 rectangle "DG MOVE Templates\nand Reporting Requirements" as DGMOVE #fff3e0
