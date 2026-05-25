@@ -30,7 +30,7 @@ U1 --> APP : review, validate, report
 U2 --> APP : administer rules and access
 U3 --> APP : use API contracts and docs
 
-APP --> NAP : discover and ingest metadata
+APP --> NAP : interlink heterogeneous NAPs and discover endpoints/datasets/relations
 APP --> INFRA : interoperable integrations
 APP --> DGMOVE : apply templates and KPI mapping
 APP --> STD : apply validation semantics

@@ -25,7 +25,7 @@ package "NAP ITS Reporter" {
   package "Logical Layer (Microservices/API)" {
     rectangle "API Gateway / BFF\nREST API + contracts" as BFF #dbeafe
     rectangle "Metadata Ingestion Service\nautomated discovery + fetch + normalization" as ING #dbeafe
-    rectangle "Interoperability Adapter Service\nNAP catalog + infrastructure connectors" as INTEROP #dbeafe
+    rectangle "Federated Registry and Discoverability Service\nNAP interlinking + searchable/explainable discovery" as REGDISC #dbeafe
     rectangle "Compliance Validation Service\ncompleteness + accuracy + consistency checks" as VAL #dbeafe
     rectangle "KPI Mapping and Analytics Service\nmetadata -> KPI -> DG MOVE mappings" as KPI #dbeafe
     rectangle "Reporting Service\nguided + semi-auto + full-auto reporting" as REP #dbeafe
@@ -55,15 +55,15 @@ BFF --> IAM
 BFF --> WF
 
 WF --> ING
-WF --> INTEROP
+WF --> REGDISC
 WF --> VAL
 WF --> KPI
 WF --> REP
 WF --> REC
 
-ING --> INTEROP
-INTEROP --> NAP
-INTEROP --> INFRA
+ING --> REGDISC
+REGDISC --> NAP
+REGDISC --> INFRA
 ING --> META
 VAL --> META
 VAL --> APPDB

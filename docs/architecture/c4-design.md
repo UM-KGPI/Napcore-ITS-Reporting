@@ -2,6 +2,10 @@
 
 This document provides the initial C4 architecture design for the web application based on the contract requirements.
 
+## Architecture Pattern
+
+The central registry not only interlinks heterogeneous NAPs, but also provides searchable, explainable, and continuously updated discovery of NAP endpoints, datasets, and cross-NAP relationships, implementing a Federated Registry and Discoverability architecture for cross-NAP interoperability.
+
 ## 1) C4 - System Context (Level 1)
 
 For strict C4 notation (Structurizr DSL), see: `docs/architecture/c4-structurizr.dsl`.
@@ -28,7 +32,7 @@ flowchart LR
     U1 -->|review, validate, report| APP
     U2 -->|manage system, rules, and access| APP
     U3 -->|uses API contracts and documentation| APP
-    APP -->|discover and ingest metadata| NAP
+    APP -->|interlink heterogeneous NAPs and discover endpoints, datasets, and relations| NAP
     APP -->|interoperable integrations| INFRA
     APP -->|apply reporting templates and KPI mappings| DGMOVE
     APP -->|apply validation rules and semantics| STD
@@ -56,7 +60,7 @@ flowchart TB
         subgraph LOGIC["Logical Layer (Microservices/API)"]
             BFF[API Gateway / BFF\nREST API + API contracts]:::svc
             ING[Metadata Ingestion Service\nautomated discovery + fetch + normalization]:::svc
-            INTEROP[Interoperability Adapter Service\nNAP catalog + infrastructure connectors]:::svc
+            REGDISC[Federated Registry & Discoverability Service\nNAP interlinking + searchable/explainable discovery]:::svc
             VAL[Compliance Validation Service\ncompleteness + accuracy + consistency checks]:::svc
             KPI[KPI Mapping & Analytics Service\nmetadata -> KPI -> DG MOVE mappings]:::svc
             REP[Reporting Service\nguided + semi-auto + full-auto reporting]:::svc
@@ -85,15 +89,15 @@ flowchart TB
     BFF --> IAM
     BFF --> WF
     WF --> ING
-    WF --> INTEROP
+    WF --> REGDISC
     WF --> VAL
     WF --> KPI
     WF --> REP
     WF --> REC
 
-    ING --> INTEROP
-    INTEROP --> NAP
-    INTEROP --> INFRA
+    ING --> REGDISC
+    REGDISC --> NAP
+    REGDISC --> INFRA
     ING --> META
     VAL --> META
     VAL --> APPDB
@@ -187,10 +191,10 @@ flowchart LR
 
 ## 4) Requirement-to-C4 Coverage (Summary)
 
-- Metadata collection: `Metadata Ingestion Service` and `Interoperability Adapter Service` with automated discovery/fetch from NAP and support for JSON-LD, Turtle (.ttl), and RDF/XML (.rdf).
+- Metadata collection: `Metadata Ingestion Service` and `Federated Registry & Discoverability Service` with automated discovery/fetch from NAP and support for JSON-LD, Turtle (.ttl), and RDF/XML (.rdf).
 - Compliance verification: `Compliance Validation Service` with completeness, accuracy, and consistency checks, plus non-compliance report and recommendation generation.
 - Reporting workflow: `Workflow Orchestrator`, `Guided Report Assistant`, KPI mappings, DG MOVE template mappings, and semi/full automation modes.
-- Modular architecture and interoperability: microservices with explicit presentation, logical, and data layers; clear service-to-service data flows; integration modules for NAP catalog and infrastructure services.
+- Modular architecture and interoperability: microservices with explicit presentation, logical, and data layers; clear service-to-service data flows; federated registry and discoverability modules for NAP catalog and infrastructure services.
 - System architecture and security: `API Gateway/BFF`, standardized data models and API contracts, `AuthN/AuthZ`, access control, and event-driven integration.
 - UI requirements: `Web UI` with intuitive workflow control, compliance visualization, recommendation access, and transparent reporting workflow progress.
 
