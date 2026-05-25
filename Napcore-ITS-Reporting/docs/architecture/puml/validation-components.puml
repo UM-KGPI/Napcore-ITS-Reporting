@@ -19,7 +19,8 @@ component "Rule Set Provider" as RULES
 component "RDF Parser Adapter" as PARSER
 component "SHACL Engine" as SHACL
 component "SPARQL Rule Engine" as SPARQL
-component "Quality Checks Engine" as QCHECK
+component "Quality Checks Engine\n(completeness, accuracy, consistency)" as QCHECK
+component "Non-Compliance Report Generator" as NCREP
 component "Findings Aggregator" as AGG
 component "Recommendation Builder" as RECO
 component "Event Publisher" as PUB
@@ -45,7 +46,9 @@ QCHECK --> META
 SHACL --> AGG
 SPARQL --> AGG
 QCHECK --> AGG
+AGG --> NCREP
 AGG --> RECO
+NCREP --> APPDB
 AGG --> APPDB
 RECO --> APPDB
 ORCH --> PUB

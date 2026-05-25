@@ -6,7 +6,8 @@ This document describes the internal (code-level) design of the microservice for
 
 - Accepts a validation job for one or more metadata records.
 - Executes syntactic, semantic, and business validation checks.
-- Persists validation results and exposes reports for the UI and reporting workflow.
+- Validates completeness, accuracy, and consistency.
+- Persists validation results and generates non-compliance reports and improvement recommendations.
 
 ## Module View
 
@@ -23,7 +24,8 @@ flowchart TB
     PARSER[RDFParserAdapter]:::mod
     SHACL[ShaclValidationEngine]:::mod
     SPARQL[SparqlRuleEngine]:::mod
-    QCHECK[QualityChecksEngine]:::mod
+    QCHECK[QualityChecksEngine\n(completeness, accuracy, consistency)]:::mod
+    NCREP[NonComplianceReportGenerator]:::mod
     AGG[ResultAggregator]:::mod
     RECO[RecommendationBuilder]:::mod
     PUB[EventPublisher]:::mod
@@ -43,7 +45,9 @@ flowchart TB
     SHACL --> AGG
     SPARQL --> AGG
     QCHECK --> AGG
+    AGG --> NCREP
     AGG --> RECO
+    NCREP --> APPDB
     RECO --> APPDB
     AGG --> APPDB
     ORCH --> PUB
@@ -65,6 +69,7 @@ sequenceDiagram
     participant ORCH as ValidationOrchestrator
     participant RULES as RuleSetProvider
     participant ENGINES as SHACL+SPARQL+Quality
+    participant NCREP as NonComplianceReportGenerator
     participant DB as AppDB
     participant BUS as EventBus
 
@@ -74,6 +79,8 @@ sequenceDiagram
     RULES-->>ORCH: compiled rules
     ORCH->>ENGINES: run(rules, datasetRef)
     ENGINES-->>ORCH: findings
+    ORCH->>NCREP: buildNonComplianceReport(findings)
+    NCREP-->>ORCH: compliance report
     ORCH->>DB: persist findings + score + status
     ORCH->>BUS: publish ValidationCompleted
     ORCH-->>API: validationId
@@ -88,6 +95,7 @@ sequenceDiagram
 - ShaclValidationEngine: SHACL shape validation checks.
 - SparqlRuleEngine: semantic rules and cross-record checks.
 - QualityChecksEngine: completeness, consistency, format correctness, and uniqueness checks.
+- NonComplianceReportGenerator: builds non-compliance reports for DG MOVE reporting flow.
 - ResultAggregator: finding normalization and overall compliance score calculation.
 - RecommendationBuilder: improvement suggestions per error type.
 

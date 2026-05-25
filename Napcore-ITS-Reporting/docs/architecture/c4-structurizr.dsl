@@ -3,19 +3,23 @@ workspace "NAP ITS Reporter" "C4 model for the web application" {
     model {
         pilotAnalyst = person "Pilot User (NAP Analyst)" "Reviews compliance and prepares reports."
         administrator = person "Administrator" "Manages rules, configuration, and access."
+        technicalIntegrator = person "Technical Integrator" "Uses API contracts and integration documentation."
 
-        nap = softwareSystem "NAP endpoints" "National catalogs and API endpoints for metadata."
+        nap = softwareSystem "NAP endpoints" "NAP catalog and API endpoints for metadata."
+        infra = softwareSystem "Infrastructure services" "Registry, storage, and messaging infrastructure services."
         dgMove = softwareSystem "DG MOVE templates" "Reporting templates and KPI requirements."
         idp = softwareSystem "Identity Provider" "External OIDC/SAML identity provider."
 
         reporter = softwareSystem "NAP ITS Reporter" "Web application for automated metadata ingestion, validation, and reporting." {
-            webUi = container "Web UI" "SPA for guided reporting workflows and compliance dashboard." "TypeScript"
+            webUi = container "Web UI" "SPA for guided reporting workflows, compliance dashboard, and non-compliance visualization." "TypeScript"
+            apiDocs = container "API Documentation Portal" "OpenAPI/Swagger portal for API endpoint documentation and contracts." "Static web app"
             bff = container "API Gateway/BFF" "Single API entry point and request orchestration for the UI." "Node.js"
 
-            ingestion = container "Metadata Ingestion Service" "Discovers, fetches, and normalizes metadata from NAP." "Node.js"
-            validation = container "Compliance Validation Service" "Validates compliance with mobilityDCAT-AP and DG MOVE rules." "Java"
+            ingestion = container "Metadata Ingestion Service" "Discovers, fetches, and normalizes metadata from NAP in JSON-LD, TTL, and RDF/XML formats." "Node.js"
+            interoperability = container "Interoperability Adapter Service" "Integration modules for NAP catalog and infrastructure services." "Node.js"
+            validation = container "Compliance Validation Service" "Validates compliance with mobilityDCAT-AP and DG MOVE rules including completeness, accuracy, and consistency checks." "Java"
             kpi = container "KPI Mapping and Analytics Service" "Maps metadata to KPI and reporting templates." "Python"
-            reporting = container "Reporting Service" "Semi-automated and automated report generation." "Node.js"
+            reporting = container "Reporting Service" "Guided, semi-automated, and automated report generation." "Node.js"
             recommendation = container "Recommendation Service" "Provides improvement recommendations from findings." "Python"
             workflow = container "Workflow Orchestrator" "Orchestrates guided reporting workflow steps." "Node.js"
             iam = container "AuthN/AuthZ Service" "RBAC/ABAC, auditing, and policy enforcement." "Node.js"
@@ -31,6 +35,7 @@ workspace "NAP ITS Reporter" "C4 model for the web application" {
             shaclEngine = component "SHACL Engine" "Runs SHACL validation on RDF graphs." "Validation engine"
             sparqlEngine = component "SPARQL Rule Engine" "Runs semantic and cross-record checks." "Validation engine"
             qualityEngine = component "Quality Checks Engine" "Checks completeness, accuracy, and consistency." "Validation engine"
+            nonComplianceReportGenerator = component "Non-Compliance Report Generator" "Builds non-compliance report outputs." "Reporting component"
             findingsAggregator = component "Findings Aggregator" "Normalizes findings and calculates score." "Domain service"
             recommendationBuilder = component "Recommendation Builder" "Builds improvement recommendations." "Domain service"
 
@@ -38,7 +43,9 @@ workspace "NAP ITS Reporter" "C4 model for the web application" {
             reportingOrchestrator = component "Reporting Orchestrator" "Coordinates mapping, generation, and quality gate." "Application service"
             guidedWorkflowEngine = component "Guided Workflow Engine" "Maintains step state and user guidance." "Domain service"
             kpiMappingEngine = component "KPI Mapping Engine" "Maps metadata elements to KPI and templates." "Domain service"
+            dgMoveTemplateMapper = component "DG MOVE Template Mapper" "Maps KPI outputs into DG MOVE template fields." "Domain service"
             templateProvider = component "Template Provider" "Manages DG MOVE template versions." "Integration component"
+            automationModePlanner = component "Automation Mode Planner" "Selects guided, semi-auto, or full-auto report mode." "Policy component"
             reportGenerator = component "Report Generator" "Builds final reporting artifacts." "Generation engine"
             reportQualityGate = component "Report Quality Gate" "Enforces report completeness and consistency checks." "Policy component"
             exportManager = component "Export Manager" "Exports PDF/HTML/JSON outputs." "Output component"
@@ -46,26 +53,34 @@ workspace "NAP ITS Reporter" "C4 model for the web application" {
 
         pilotAnalyst -> reporter "Uses for validation and reporting"
         administrator -> reporter "Manages configuration and access"
+        technicalIntegrator -> reporter "Uses API documentation and contracts"
 
         reporter -> nap "Discovers and ingests metadata"
+        reporter -> infra "Integrates with infrastructure services"
         reporter -> dgMove "Uses reporting templates"
         reporter -> idp "Delegates authentication"
 
         webUi -> bff "HTTPS/JSON"
+        technicalIntegrator -> apiDocs "Reads endpoint docs"
+        apiDocs -> bff "Documents endpoint contracts"
         bff -> workflow "Calls workflow APIs"
         bff -> iam "Authorizes requests"
 
         workflow -> ingestion "Starts ingestion"
+        workflow -> interoperability "Calls integration modules"
         workflow -> validation "Starts validation"
         workflow -> kpi "Calculates KPI"
         workflow -> reporting "Starts reporting"
         workflow -> recommendation "Builds recommendations"
 
-        ingestion -> nap "HTTP API"
+        ingestion -> interoperability "Uses ingestion connectors"
+        interoperability -> nap "HTTP API"
+        interoperability -> infra "Infrastructure APIs"
         ingestion -> metadataStore "Stores RDF"
 
         validation -> metadataStore "Reads RDF"
         validation -> appDb "Stores findings"
+        validation -> docsStore "Stores non-compliance reports"
         validation -> eventBus "Publishes ValidationCompleted"
 
         kpi -> metadataStore "Reads RDF"
@@ -91,6 +106,9 @@ workspace "NAP ITS Reporter" "C4 model for the web application" {
         shaclEngine -> findingsAggregator "findings"
         sparqlEngine -> findingsAggregator "findings"
         qualityEngine -> findingsAggregator "findings"
+        findingsAggregator -> nonComplianceReportGenerator "buildNonComplianceReport"
+        nonComplianceReportGenerator -> appDb "persistReportMetadata"
+        nonComplianceReportGenerator -> docsStore "persistReportArtifacts"
         findingsAggregator -> recommendationBuilder "deriveRecommendations"
         findingsAggregator -> appDb "persistSummary"
         recommendationBuilder -> appDb "persistRecommendations"
@@ -98,7 +116,9 @@ workspace "NAP ITS Reporter" "C4 model for the web application" {
         reportingController -> reportingOrchestrator "startReport"
         reportingOrchestrator -> guidedWorkflowEngine "resolveStepState"
         reportingOrchestrator -> kpiMappingEngine "resolveMappings"
+        reportingOrchestrator -> dgMoveTemplateMapper "resolveTemplateMappings"
         reportingOrchestrator -> templateProvider "loadTemplate"
+        reportingOrchestrator -> automationModePlanner "selectMode"
         reportingOrchestrator -> reportGenerator "generate"
         reportingOrchestrator -> reportQualityGate "validate"
         reportingOrchestrator -> exportManager "export"
@@ -126,10 +146,12 @@ workspace "NAP ITS Reporter" "C4 model for the web application" {
             include shaclEngine
             include sparqlEngine
             include qualityEngine
+            include nonComplianceReportGenerator
             include findingsAggregator
             include recommendationBuilder
             include metadataStore
             include appDb
+            include docsStore
             include eventBus
             include dgMove
             autoLayout lr
@@ -140,7 +162,9 @@ workspace "NAP ITS Reporter" "C4 model for the web application" {
             include reportingOrchestrator
             include guidedWorkflowEngine
             include kpiMappingEngine
+            include dgMoveTemplateMapper
             include templateProvider
+            include automationModePlanner
             include reportGenerator
             include reportQualityGate
             include exportManager

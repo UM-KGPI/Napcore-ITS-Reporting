@@ -15,17 +15,21 @@ flowchart LR
 
     U1[Pilot User\nNAP Analyst]:::user
     U2[Administrator]:::user
+    U3[Technical Integrator]:::user
 
     APP["NAP ITS Reporter\n(Web Application)"]:::app
 
-    NAP[NAP catalogs and API endpoints]:::ext
+    NAP[NAP catalog and API endpoints]:::ext
+    INFRA[Infrastructure services\nregistry, storage, messaging]:::ext
     DGMOVE[DG MOVE templates and reporting requirements]:::ext
     STD[mobilityDCAT-AP and RDF standards\nJSON-LD, TTL, RDF/XML]:::ext
     IDP[External IdP\nOIDC/SAML]:::ext
 
     U1 -->|review, validate, report| APP
     U2 -->|manage system, rules, and access| APP
+    U3 -->|uses API contracts and documentation| APP
     APP -->|discover and ingest metadata| NAP
+    APP -->|interoperable integrations| INFRA
     APP -->|apply reporting templates and KPI mappings| DGMOVE
     APP -->|apply validation rules and semantics| STD
     APP -->|authentication and authorization| IDP
@@ -44,41 +48,56 @@ flowchart TB
     U[User]:::user
 
     subgraph PLATFORM[NAP ITS Reporter]
-        UI[Web UI\nSPA + guided workflow]:::app
-        BFF[API Gateway / BFF\nREST API + API contracts]:::svc
+        subgraph PRESENTATION[Presentation Layer]
+            UI[Web UI\nvalidation dashboard + workflow view]:::app
+            APIDOC[API Documentation Portal\nOpenAPI/Swagger]:::app
+        end
 
-        ING[Metadata Ingestion Service\nNAP discovery, fetch, normalization]:::svc
-        VAL[Compliance Validation Service\nrules + SHACL/SPARQL validation]:::svc
-        KPI[KPI Mapping & Analytics Service\nmetadata mappings -> KPI -> DG MOVE]:::svc
-        REP[Reporting Service\nsemi-automated/automated report generation]:::svc
-        REC[Recommendation Service\nnon-compliance improvement suggestions]:::svc
-        WF[Workflow Orchestrator\nreporting workflow orchestration]:::svc
-        IAM[AuthN/AuthZ Service\nRBAC/ABAC, auditing]:::svc
+        subgraph LOGIC[Logical Layer (Microservices/API)]
+            BFF[API Gateway / BFF\nREST API + API contracts]:::svc
+            ING[Metadata Ingestion Service\nautomated discovery + fetch + normalization]:::svc
+            INTEROP[Interoperability Adapter Service\nNAP catalog + infrastructure connectors]:::svc
+            VAL[Compliance Validation Service\ncompleteness + accuracy + consistency checks]:::svc
+            KPI[KPI Mapping & Analytics Service\nmetadata -> KPI -> DG MOVE mappings]:::svc
+            REP[Reporting Service\nguided + semi-auto + full-auto reporting]:::svc
+            REC[Recommendation Service\nnon-compliance improvement suggestions]:::svc
+            WF[Workflow Orchestrator\nend-to-end reporting workflow]:::svc
+            IAM[AuthN/AuthZ Service\nRBAC/ABAC, auditing]:::svc
+        end
 
-        MQ[(Event Bus / Queue)]:::data
-        META[(Metadata Store\nRDF triplestore)]:::data
-        APPDB[(Application DB\nusers, configuration, jobs)]:::data
-        DOCS[(Document Store\nreports, export files)]:::data
+        subgraph DATA[Data Layer]
+            MQ[(Event Bus / Queue)]:::data
+            META[(Metadata Store\nRDF triplestore)]:::data
+            APPDB[(Application DB\nusers, configuration, jobs)]:::data
+            DOCS[(Document Store\nreports, exports, compliance outputs)]:::data
+        end
     end
 
-    NAP[NAP API endpoints]:::ext
+    NAP[NAP catalog and API endpoints]:::ext
+    INFRA[Infrastructure services]:::ext
     DGMOVE[DG MOVE templates]:::ext
     IDP[External Identity Provider]:::ext
 
     U --> UI
     UI --> BFF
+    U --> APIDOC
+    APIDOC --> BFF
     BFF --> IAM
     BFF --> WF
     WF --> ING
+    WF --> INTEROP
     WF --> VAL
     WF --> KPI
     WF --> REP
     WF --> REC
 
-    ING --> NAP
+    ING --> INTEROP
+    INTEROP --> NAP
+    INTEROP --> INFRA
     ING --> META
     VAL --> META
     VAL --> APPDB
+    VAL --> DOCS
     KPI --> META
     KPI --> APPDB
     REP --> DGMOVE
@@ -109,8 +128,9 @@ flowchart LR
     RuleRepo[Rule Repository\nmobilityDCAT-AP + DG MOVE rules]:::svc
     ShapeEngine[SHACL Engine]:::svc
     SemanticChecks[SPARQL Semantic Checks]:::svc
-    Completeness[Completeness & Consistency Checker]:::svc
-    ReportBuilder[Non-compliance + recommendations\nReport Builder]:::svc
+    DataQuality[Completeness + Accuracy + Consistency\nChecks]:::svc
+    NonComplianceReport[Non-compliance Report Generator]:::svc
+    ReportBuilder[Recommendation Report Builder]:::svc
 
     META[(RDF Metadata Store)]:::data
     APPDB[(Application DB)]:::data
@@ -119,14 +139,15 @@ flowchart LR
     API --> RuleRepo
     API --> ShapeEngine
     API --> SemanticChecks
-    API --> Completeness
+    API --> DataQuality
     ShapeEngine --> META
     SemanticChecks --> META
-    Completeness --> META
+    DataQuality --> META
     RuleRepo --> STD
-    ShapeEngine --> ReportBuilder
-    SemanticChecks --> ReportBuilder
-    Completeness --> ReportBuilder
+    ShapeEngine --> NonComplianceReport
+    SemanticChecks --> NonComplianceReport
+    DataQuality --> NonComplianceReport
+    NonComplianceReport --> ReportBuilder
     ReportBuilder --> APPDB
 ```
 
@@ -140,7 +161,9 @@ flowchart LR
 
     RAPI[Reporting API]:::svc
     Mapper[KPI/Template Mapper]:::svc
+    DgMoveMapper[DG MOVE Template Mapper]:::svc
     Guide[Guided Report Assistant]:::svc
+    AutomationPlanner[Automation Planner\n(manual assist / semi / full)]:::svc
     Generator[Report Generator\n(partial/full auto)]:::svc
     Exporter[Exporter\nPDF/HTML/JSON]:::svc
 
@@ -149,10 +172,14 @@ flowchart LR
     DGT[DG MOVE templates]:::ext
 
     RAPI --> Mapper
+    RAPI --> DgMoveMapper
     RAPI --> Guide
+    RAPI --> AutomationPlanner
     RAPI --> Generator
     Mapper --> DGT
+    DgMoveMapper --> DGT
     Guide --> APPDB
+    AutomationPlanner --> APPDB
     Generator --> APPDB
     Generator --> DOCS
     Generator --> Exporter
@@ -160,12 +187,12 @@ flowchart LR
 
 ## 4) Requirement-to-C4 Coverage (Summary)
 
-- Metadata collection: `Metadata Ingestion Service`, `NAP adapters`, and RDF format support in API contracts.
-- Compliance verification: `Compliance Validation Service`, `Rule Repository`, and `SHACL/SPARQL`.
-- Reporting workflow: `Workflow Orchestrator`, `Reporting Service`, `Guided Report Assistant`, and `KPI Mapping`.
-- Modular architecture: microservices plus separated data, logic, and presentation layers.
-- System architecture: `API Gateway/BFF`, standardized API contracts, `AuthN/AuthZ`, and event-driven integration.
-- UI requirements: `Web UI` with dashboard views for validation, non-compliance findings, recommendations, and reporting workflows.
+- Metadata collection: `Metadata Ingestion Service` and `Interoperability Adapter Service` with automated discovery/fetch from NAP and support for JSON-LD, Turtle (.ttl), and RDF/XML (.rdf).
+- Compliance verification: `Compliance Validation Service` with completeness, accuracy, and consistency checks, plus non-compliance report and recommendation generation.
+- Reporting workflow: `Workflow Orchestrator`, `Guided Report Assistant`, KPI mappings, DG MOVE template mappings, and semi/full automation modes.
+- Modular architecture and interoperability: microservices with explicit presentation, logical, and data layers; clear service-to-service data flows; integration modules for NAP catalog and infrastructure services.
+- System architecture and security: `API Gateway/BFF`, standardized data models and API contracts, `AuthN/AuthZ`, access control, and event-driven integration.
+- UI requirements: `Web UI` with intuitive workflow control, compliance visualization, recommendation access, and transparent reporting workflow progress.
 
 ## 5) Completed Next-Step Artifacts
 
