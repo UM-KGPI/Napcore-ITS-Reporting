@@ -1,6 +1,6 @@
 sequenceDiagram
     participant UI as Web UI
-    participant BFF as API Gateway / BFF
+    participant FAPI as Frontend API Layer
     participant API as ReportingController
     participant ORCH as ReportingOrchestrator
     participant MAP as KpiMappingEngine
@@ -10,8 +10,8 @@ sequenceDiagram
     participant QA as ReportQualityGate
     participant DOCS as DocumentStore
 
-    UI->>BFF: Start report generation
-    BFF->>API: POST /reports (period, scope, mode)
+    UI->>FAPI: Start report generation
+    FAPI->>API: POST /reports (period, scope, mode)
     API->>ORCH: startReportGeneration(cmd)
     ORCH->>MAP: resolve KPI mappings
     ORCH->>DGMAP: resolve DG MOVE template mapping
@@ -24,5 +24,5 @@ sequenceDiagram
     QA-->>ORCH: pass + warnings
     ORCH->>DOCS: save final report versions
     ORCH-->>API: reportId
-    API-->>BFF: 202 Accepted (reportId)
-    BFF-->>UI: 202 Accepted (reportId)
+    API-->>FAPI: 202 Accepted (reportId)
+    FAPI-->>UI: 202 Accepted (reportId)
