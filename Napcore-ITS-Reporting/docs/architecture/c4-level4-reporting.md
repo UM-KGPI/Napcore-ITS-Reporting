@@ -5,7 +5,7 @@ This document describes the internal (code-level) design of the microservice for
 ## Purpose
 
 - Manages a guided reporting workflow.
-- Maps metadata elements to KPI and DG MOVE templates.
+- Maps metadata (mobilityDCAT-AP) elements to KPI and DG MOVE templates.
 - Supports partially or fully automated report generation.
 - Provides documentation-ready report outputs and exports.
 
@@ -59,6 +59,9 @@ flowchart TB
 ```
 
 ## Primary Runtime Flow (Sequence)
+
+- Mermaid source: `docs/architecture/mermaid/reporting-primary-runtime-flow.mmd`
+- SVG export: `docs/architecture/svg/reporting-primary-runtime-flow-mermaid.svg`
 
 ```mermaid
 sequenceDiagram
