@@ -2,6 +2,8 @@
 
 NAP ITS Reporter is a pilot web application for mobilityDCAT-AP metadata processing across National Access Points (NAPs).
 
+The application supports preparation of the ITS Implementation Report in line with the Delegated Regulation available at https://eur-lex.europa.eu/legal-content/EN/ALL/?uri=oj:L_202500264.
+
 The architecture follows a Federated Registry and Discoverability approach for cross-NAP interoperability. It supports:
 
 - metadata discovery and ingestion,
@@ -59,18 +61,6 @@ flowchart LR
 - AuthN/AuthZ Service
 - Metadata Store, Application DB, Document Store, Event Bus
 
-## Dataset Health Readiness
-
-The Registry and Discoverability service evaluates dataset health per dataset ID found in mobilityDCAT-AP metadata.
-
-Primary readiness states:
-
-- ready
-- degraded
-- unavailable
-- unknown
-
-A dataset is considered ready when metadata resolution succeeds, a usable access endpoint is present, service probing succeeds, and freshness policy is satisfied.
 
 ## Key Documentation
 
