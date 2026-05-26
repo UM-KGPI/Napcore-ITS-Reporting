@@ -20,6 +20,9 @@ The service evaluates health per `datasetId`.
 
 ## Module View
 
+- Mermaid source: `docs/architecture/mermaid/registry-discoverability-module-view.mmd`
+- SVG export: `docs/architecture/svg/registry-discoverability-module-view.svg`
+
 ```mermaid
 flowchart TB
     classDef mod fill:#2563eb,stroke:#1e3a8a,color:#fff
@@ -62,6 +65,9 @@ flowchart TB
 ```
 
 ## Primary Runtime Flow (Sequence)
+
+- Mermaid source: `docs/architecture/mermaid/registry-discoverability-primary-runtime-flow.mmd`
+- SVG export: `docs/architecture/svg/registry-discoverability-primary-runtime-flow.svg`
 
 ```mermaid
 sequenceDiagram
