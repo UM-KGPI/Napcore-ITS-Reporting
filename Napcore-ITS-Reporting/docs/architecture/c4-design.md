@@ -8,6 +8,8 @@ Primary pattern: Federated Registry and Discoverability architecture for cross-N
 
 The central registry not only interlinks heterogeneous NAPs, but also provides searchable, explainable, and continuously updated discovery of NAP endpoints, datasets, and cross-NAP relationships.
 
+For dataset-level trust, the registry also maintains a dataset health status derived from mobilityDCAT-AP metadata and active availability checks against the dataset service resolved by dataset identifier. The primary operational state is `ready`, meaning the dataset can be resolved from catalog metadata and its delivery service responds successfully within the expected policy threshold.
+
 ## 1) C4 - System Context (Level 1)
 
 For strict C4 notation (Structurizr DSL), see: `docs/architecture/c4-structurizr.dsl`.
@@ -97,6 +99,7 @@ flowchart TB
     REGDISC -.implements.-> PATTERN2
     REGDISC --> NAP
     REGDISC --> INFRA
+    REGDISC -->|resolve dataset by ID and evaluate service readiness| NAP
     ING --> META
     VAL --> META
     VAL --> APPDB
@@ -187,9 +190,67 @@ flowchart LR
     Generator --> Exporter
 ```
 
+### 3.3 Federated Registry and Discoverability Service - Dataset Health
+
+Dataset health status is evaluated per `datasetId` discovered in mobilityDCAT-AP metadata. The service resolves the dataset record, extracts its distribution or access endpoint, performs an availability check, and persists a trustable readiness result for catalog and API consumers.
+
+`ready` means all of the following are true:
+
+- the dataset identifier resolves to a known metadata record,
+- the metadata contains a usable distribution or access URL,
+- the target service responds successfully to the configured probe,
+- the response is recent enough to be trusted according to monitoring policy.
+
+```mermaid
+flowchart LR
+    classDef svc fill:#2563eb,stroke:#1e3a8a,color:#fff
+    classDef data fill:#7c3aed,stroke:#4c1d95,color:#fff
+    classDef ext fill:#d97706,stroke:#92400e,color:#fff
+
+    API[Dataset Catalog API\nregistry + health endpoints]:::svc
+    RES[Dataset Metadata Resolver\ndatasetId -> mobilityDCAT-AP record]:::svc
+    URL[Distribution URL Extractor\naccess/download/service URL]:::svc
+    PROBE[Availability Probe\nHEAD/GET or API probe]:::svc
+    TRUST[Health Trust Evaluator\nready/degraded/unavailable/unknown]:::svc
+    CACHE[Health Status Cache]:::data
+    META[(RDF Metadata Store)]:::data
+    NAP[NAP dataset delivery service]:::ext
+
+    API --> RES
+    RES --> META
+    RES --> URL
+    URL --> PROBE
+    PROBE --> NAP
+    PROBE --> TRUST
+    RES --> TRUST
+    TRUST --> CACHE
+    API --> CACHE
+```
+
+Primary runtime flow:
+
+```mermaid
+sequenceDiagram
+    participant UI as Web UI
+    participant BFF as API Gateway / BFF
+    participant REG as Registry and Discoverability Service
+    participant META as Metadata Store
+    participant NAP as NAP dataset service
+
+    UI->>BFF: View dataset health(datasetId)
+    BFF->>REG: GET /registry/datasets/{datasetId}/health
+    REG->>META: Resolve dataset metadata by datasetId
+    META-->>REG: mobilityDCAT-AP dataset record
+    REG->>NAP: Probe dataset access URL from metadata
+    NAP-->>REG: Availability response
+    REG-->>BFF: readinessStatus, checkedAt, evidence
+    BFF-->>UI: Dataset health status
+```
+
 ## 4) Requirement-to-C4 Coverage (Summary)
 
 - Metadata collection: `Metadata Ingestion Service` and `Federated Registry & Discoverability Service` with automated discovery/fetch from NAP and support for JSON-LD, Turtle (.ttl), and RDF/XML (.rdf).
+- Dataset readiness and trust: `Federated Registry & Discoverability Service` resolves each `datasetId` from mobilityDCAT-AP metadata, probes the referenced dataset service, and exposes a trustable dataset health status with `ready` as the primary healthy state.
 - Compliance verification: `Compliance Validation Service` with completeness, accuracy, and consistency checks, plus non-compliance report and recommendation generation.
 - Reporting workflow: `Workflow Orchestrator`, `Guided Report Assistant`, KPI mappings, DG MOVE template mappings, and semi/full automation modes.
 - Modular architecture and interoperability: microservices with explicit presentation, logical, and data layers; clear service-to-service data flows; federated registry and discoverability modules for NAP catalog and infrastructure services.

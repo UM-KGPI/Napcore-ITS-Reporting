@@ -11,6 +11,7 @@ servers:
 tags:
   - name: Ingestion
   - name: Registry
+  - name: Dataset Health
   - name: Search
   - name: Relations
   - name: Validation
@@ -194,6 +195,48 @@ paths:
                 $ref: '#/components/schemas/NapRegistryEntry'
         '404':
           $ref: '#/components/responses/NotFound'
+  /registry/datasets/{datasetId}:
+    get:
+      tags: [Registry]
+      summary: Get dataset registry details resolved from mobilityDCAT-AP metadata
+      operationId: getRegistryDataset
+      parameters:
+        - $ref: '#/components/parameters/DatasetId'
+      responses:
+        '200':
+          description: Dataset registry details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegistryDataset'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /registry/datasets/{datasetId}/health:
+    get:
+      tags: [Dataset Health]
+      summary: Get dataset health and readiness status
+      description: |
+        Resolves the dataset by identifier from mobilityDCAT-AP metadata and returns
+        the current trustable health assessment of the referenced dataset service.
+      operationId: getDatasetHealth
+      parameters:
+        - $ref: '#/components/parameters/DatasetId'
+        - name: refresh
+          in: query
+          required: false
+          description: Force a fresh availability probe instead of serving cached status.
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Dataset health status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatasetHealthStatus'
+        '404':
+          $ref: '#/components/responses/NotFound'
   /search:
     get:
       tags: [Search]
@@ -286,6 +329,12 @@ components:
         type: string
     RelationId:
       name: relationId
+      in: path
+      required: true
+      schema:
+        type: string
+    DatasetId:
+      name: datasetId
       in: path
       required: true
       schema:
@@ -451,6 +500,99 @@ components:
           format: date-time
         explainabilityNote:
           type: string
+    RegistryDataset:
+      type: object
+      required: [datasetId, napId, title, metadataRecordUrl, distribution]
+      properties:
+        datasetId:
+          type: string
+        napId:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        metadataRecordUrl:
+          type: string
+          format: uri
+        keywords:
+          type: array
+          items:
+            type: string
+        distribution:
+          $ref: '#/components/schemas/DatasetDistribution'
+        health:
+          $ref: '#/components/schemas/DatasetHealthStatus'
+    DatasetDistribution:
+      type: object
+      required: [accessUrl]
+      properties:
+        accessUrl:
+          type: string
+          format: uri
+        downloadUrl:
+          type: string
+          format: uri
+        mediaType:
+          type: string
+        format:
+          type: string
+    DatasetHealthStatus:
+      type: object
+      required: [datasetId, readinessStatus, availability, checkedAt, trustLevel]
+      properties:
+        datasetId:
+          type: string
+        readinessStatus:
+          type: string
+          description: Primary operational status used by catalog and API consumers.
+          enum: [ready, degraded, unavailable, unknown]
+        availability:
+          type: string
+          enum: [reachable, intermittent, unreachable, not-tested]
+        trustLevel:
+          type: string
+          enum: [high, medium, low]
+        checkedAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+        probeMethod:
+          type: string
+          enum: [head, get, api]
+        responseTimeMs:
+          type: integer
+          minimum: 0
+        httpStatus:
+          type: integer
+          minimum: 100
+          maximum: 599
+        metadataSource:
+          type: string
+          format: uri
+        distributionUrl:
+          type: string
+          format: uri
+        evidence:
+          type: array
+          items:
+            $ref: '#/components/schemas/HealthEvidence'
+        message:
+          type: string
+    HealthEvidence:
+      type: object
+      required: [type, value]
+      properties:
+        type:
+          type: string
+          enum: [metadata-resolution, endpoint-probe, freshness-policy]
+        value:
+          type: string
+        observedAt:
+          type: string
+          format: date-time
     SearchResult:
       type: object
       required: [id, type, title]
@@ -466,6 +608,8 @@ components:
           type: string
         score:
           type: number
+        datasetHealth:
+          $ref: '#/components/schemas/DatasetHealthStatus'
     RegistryRelation:
       type: object
       required: [relationId, sourceNapId, targetNapId, relationType]
