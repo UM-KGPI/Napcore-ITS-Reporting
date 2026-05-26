@@ -58,7 +58,7 @@ flowchart TB
         end
 
         subgraph LOGIC["Logical Layer (Microservices/API)"]
-            BFF[API Gateway / BFF\nREST API + API contracts]:::svc
+            BFF[API Gateway\n(frontend-oriented API composition layer)]:::svc
             ING[Metadata Ingestion Service\nautomated discovery + fetch + normalization]:::svc
             REGDISC[Federated Registry and Discoverability Service\nfor cross-NAP interoperability]:::svc
             PATTERN2["Federated Registry and Discoverability architecture for cross-NAP interoperability"]:::system
@@ -254,7 +254,7 @@ sequenceDiagram
 - Compliance verification: `Compliance Validation Service` with completeness, accuracy, and consistency checks, plus non-compliance report and recommendation generation.
 - Reporting workflow: `Workflow Orchestrator`, `Guided Report Assistant`, KPI mappings, DG MOVE template mappings, and semi/full automation modes.
 - Modular architecture and interoperability: microservices with explicit presentation, logical, and data layers; clear service-to-service data flows; federated registry and discoverability modules for NAP catalog and infrastructure services.
-- System architecture and security: `API Gateway/BFF`, standardized data models and API contracts, `AuthN/AuthZ`, access control, and event-driven integration.
+- System architecture and security: `API Gateway (frontend-oriented API composition layer)`, standardized data models and API contracts, `AuthN/AuthZ`, access control, and event-driven integration.
 - UI requirements: `Web UI` with intuitive workflow control, compliance visualization, recommendation access, and transparent reporting workflow progress.
 
 ## 5) Completed Next-Step Artifacts
