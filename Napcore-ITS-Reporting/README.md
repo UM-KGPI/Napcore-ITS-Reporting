@@ -91,15 +91,14 @@ A dataset is considered ready when metadata resolution succeeds, a usable access
 
 ## API Contracts
 
-- BFF API: [docs/api/openapi-bff.yaml](docs/api/openapi-bff.yaml)
+- API Gateway API: [docs/api/openapi-bff.yaml](docs/api/openapi-bff.yaml)
 - Validation API: [docs/api/openapi-validation.yaml](docs/api/openapi-validation.yaml)
 - Reporting API: [docs/api/openapi-reporting.yaml](docs/api/openapi-reporting.yaml)
 
 ## How to Contribute
 
-- Read the contribution guide: [CONTRIBUTING.md](CONTRIBUTING.md)
 - Use feature branches for changes and open a pull request.
-- Follow commit, push, PR, and merge rules defined in the contribution guide.
+- Follow commit, push, PR, and merge rules defined in the contribution guide: [CONTRIBUTING.md](CONTRIBUTING.md) 
 
 ## Repository Structure
 
