@@ -18,6 +18,33 @@ The system is modeled with C4 diagrams from context down to component level:
 - Level 3 (Components): internal components for validation, reporting, and registry/discoverability.
 - Level 4 (Code-oriented docs): service-level internals and runtime flows.
 
+### C4 - System Context (Level 1)
+
+```mermaid
+flowchart LR
+	classDef system fill:#0b3d91,stroke:#08295f,color:#fff
+	classDef app fill:#0f766e,stroke:#0a4f4a,color:#fff
+	classDef ext fill:#d97706,stroke:#92400e,color:#fff
+	classDef user fill:#374151,stroke:#111827,color:#fff
+
+	U[Member state / NAP operator]:::user
+
+	APP["NAP ITS Reporter\n(Web Application)"]:::app
+	PATTERN["Federated Registry and Discoverability architecture for cross-NAP interoperability"]:::system
+
+	NAP[NAP catalog and API endpoints]:::ext
+	INFRA[Infrastructure services\nregistry, storage, messaging]:::ext
+	DGMOVE[DG MOVE templates and reporting requirements]:::ext
+	STD[mobilityDCAT-AP and RDF standards\nJSON-LD, TTL, RDF/XML]:::ext
+
+	U -->|review, validate, report| APP
+	APP -.implements.-> PATTERN
+	APP -->|interlink heterogeneous NAPs and discover endpoints, datasets, and relations| NAP
+	APP -->|interoperable integrations| INFRA
+	APP -->|apply reporting templates and KPI mappings| DGMOVE
+	APP -->|apply validation rules and semantics| STD
+```
+
 ## Main Building Blocks
 
 - Web UI and API documentation portal
@@ -67,6 +94,12 @@ A dataset is considered ready when metadata resolution succeeds, a usable access
 - BFF API: [docs/api/openapi-bff.yaml](docs/api/openapi-bff.yaml)
 - Validation API: [docs/api/openapi-validation.yaml](docs/api/openapi-validation.yaml)
 - Reporting API: [docs/api/openapi-reporting.yaml](docs/api/openapi-reporting.yaml)
+
+## How to Contribute
+
+- Read the contribution guide: [CONTRIBUTING.md](CONTRIBUTING.md)
+- Use feature branches for changes and open a pull request.
+- Follow commit, push, PR, and merge rules defined in the contribution guide.
 
 ## Repository Structure
 
