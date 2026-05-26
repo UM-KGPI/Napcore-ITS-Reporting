@@ -15,7 +15,7 @@ Establish a web application that automates:
 ## Architecture at a glance
 
 - Frontend: Web UI (SPA) for workflow management, compliance views, and reports.
-- Edge/API: API Gateway/BFF as a single entry point for UI and external clients.
+- Edge/API: API Gateway (frontend-oriented API composition layer) as a single entry point for UI and external clients.
 - Core services:
 - Metadata Ingestion Service
 - Compliance Validation Service

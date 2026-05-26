@@ -10,7 +10,7 @@ workspace "NAP ITS Reporter" "C4 model for the web application using a Federated
         reporter = softwareSystem "NAP ITS Reporter" "Web application for automated metadata ingestion, validation, and reporting." {
             webUi = container "Web UI" "SPA for guided reporting workflows, compliance dashboard, and non-compliance visualization." "TypeScript"
             apiDocs = container "API Documentation Portal" "OpenAPI/Swagger portal for API endpoint documentation and contracts." "Static web app"
-            bff = container "API Gateway/BFF" "Single API entry point and request orchestration for the UI." "Node.js"
+            bff = container "API Gateway" "Frontend-oriented API composition layer serving as a single API entry point and request orchestration for the UI." "Node.js"
 
             ingestion = container "Metadata Ingestion Service" "Discovers, fetches, and normalizes metadata from NAP in JSON-LD, TTL, and RDF/XML formats." "Node.js"
             registryDiscoverability = container "Federated Registry and Discoverability Service" "Implements the Federated Registry and Discoverability architecture for cross-NAP interoperability by interlinking heterogeneous NAPs, providing searchable discovery of endpoints, datasets, and cross-NAP relationships, and maintaining trustable dataset health readiness derived from mobilityDCAT-AP metadata and active availability checks." "Node.js" {

@@ -48,7 +48,7 @@ flowchart LR
 ## Main Building Blocks
 
 - Web UI and API documentation portal
-- API Gateway / BFF
+- API Gateway (frontend-oriented API composition layer)
 - Metadata Ingestion Service
 - Federated Registry and Discoverability Service
 - Compliance Validation Service
