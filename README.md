@@ -74,20 +74,13 @@ A dataset is considered ready when metadata resolution succeeds, a usable access
 
 ## Key Documentation
 
-- Architecture index: [docs/architecture/c4-design.md](docs/architecture/c4-design.md)
-- Strict C4 model: [docs/architecture/c4-structurizr.dsl](docs/architecture/c4-structurizr.dsl)
-- Level 4 Validation service: [docs/architecture/c4-level4-validation.md](docs/architecture/c4-level4-validation.md)
-- Level 4 Reporting service: [docs/architecture/c4-level4-reporting.md](docs/architecture/c4-level4-reporting.md)
-- Level 4 Registry and Discoverability service: [docs/architecture/c4-level4-registry-discoverability.md](docs/architecture/c4-level4-registry-discoverability.md)
-
-## Diagram Exports (SVG)
-
-- System context: [docs/architecture/svg/system-context.svg](docs/architecture/svg/system-context.svg)
-- Container view: [docs/architecture/svg/container.svg](docs/architecture/svg/container.svg)
-- Validation components: [docs/architecture/svg/validation-components.svg](docs/architecture/svg/validation-components.svg)
-- Reporting components: [docs/architecture/svg/reporting-components.svg](docs/architecture/svg/reporting-components.svg)
-- Registry module view: [docs/architecture/svg/registry-discoverability-module-view.svg](docs/architecture/svg/registry-discoverability-module-view.svg)
-- Registry runtime flow: [docs/architecture/svg/registry-discoverability-primary-runtime-flow.svg](docs/architecture/svg/registry-discoverability-primary-runtime-flow.svg)
+| Documentation | Paired SVG export(s) |
+| --- | --- |
+| [docs/architecture/c4-design.md](docs/architecture/c4-design.md) | [docs/architecture/svg/system-context.svg](docs/architecture/svg/system-context.svg), [docs/architecture/svg/container.svg](docs/architecture/svg/container.svg) |
+| [docs/architecture/c4-structurizr.dsl](docs/architecture/c4-structurizr.dsl) | Uses the same architectural views represented by [docs/architecture/svg/system-context.svg](docs/architecture/svg/system-context.svg) and [docs/architecture/svg/container.svg](docs/architecture/svg/container.svg) |
+| [docs/architecture/c4-level4-validation.md](docs/architecture/c4-level4-validation.md) | [docs/architecture/svg/validation-components.svg](docs/architecture/svg/validation-components.svg) |
+| [docs/architecture/c4-level4-reporting.md](docs/architecture/c4-level4-reporting.md) | [docs/architecture/svg/reporting-components.svg](docs/architecture/svg/reporting-components.svg), [docs/architecture/svg/reporting-primary-runtime-flow-mermaid.svg](docs/architecture/svg/reporting-primary-runtime-flow-mermaid.svg) |
+| [docs/architecture/c4-level4-registry-discoverability.md](docs/architecture/c4-level4-registry-discoverability.md) | [docs/architecture/svg/registry-discoverability-module-view.svg](docs/architecture/svg/registry-discoverability-module-view.svg), [docs/architecture/svg/registry-discoverability-primary-runtime-flow.svg](docs/architecture/svg/registry-discoverability-primary-runtime-flow.svg) |
 
 ## API Contracts
 
