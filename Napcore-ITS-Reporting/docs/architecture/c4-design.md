@@ -261,6 +261,7 @@ sequenceDiagram
 
 - C4 Level 4 (Code) for Validation Service: `docs/architecture/c4-level4-validation.md`
 - C4 Level 4 (Code) for Reporting Service: `docs/architecture/c4-level4-reporting.md`
+- C4 Level 4 (Code) for Registry and Discoverability Service: `docs/architecture/c4-level4-registry-discoverability.md`
 - OpenAPI draft for BFF: `docs/api/openapi-bff.yaml`
 - OpenAPI draft for Validation Service: `docs/api/openapi-validation.yaml`
 - OpenAPI draft for Reporting Service: `docs/api/openapi-reporting.yaml`

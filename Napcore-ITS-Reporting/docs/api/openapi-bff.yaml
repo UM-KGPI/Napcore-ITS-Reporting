@@ -233,6 +233,32 @@ paths:
           description: Dataset health status
           content:
             application/json:
+              examples:
+                readyDataset:
+                  summary: Ready dataset resolved from mobilityDCAT-AP metadata
+                  value:
+                    datasetId: eu.at.nap.dataset.roadworks-001
+                    readinessStatus: ready
+                    availability: reachable
+                    trustLevel: high
+                    checkedAt: '2026-05-26T09:12:34Z'
+                    expiresAt: '2026-05-26T10:12:34Z'
+                    probeMethod: head
+                    responseTimeMs: 184
+                    httpStatus: 200
+                    metadataSource: https://nap.example.at/catalog/datasets/roadworks-001.jsonld
+                    distributionUrl: https://api.nap.example.at/datasets/roadworks-001
+                    evidence:
+                      - type: metadata-resolution
+                        value: datasetId resolved from mobilityDCAT-AP dataset graph
+                        observedAt: '2026-05-26T09:12:33Z'
+                      - type: endpoint-probe
+                        value: HEAD request returned HTTP 200 in 184 ms
+                        observedAt: '2026-05-26T09:12:34Z'
+                      - type: freshness-policy
+                        value: trusted for 60 minutes
+                        observedAt: '2026-05-26T09:12:34Z'
+                    message: Dataset delivery service is reachable and trusted.
               schema:
                 $ref: '#/components/schemas/DatasetHealthStatus'
         '404':
