@@ -42,7 +42,7 @@ flowchart LR
 ## 2) C4 - Container Diagram (Level 2)
 
 ```mermaid
-flowchart TB
+flowchart LR
     classDef app fill:#0f766e,stroke:#0a4f4a,color:#fff
     classDef svc fill:#2563eb,stroke:#1e3a8a,color:#fff
     classDef data fill:#7c3aed,stroke:#4c1d95,color:#fff
@@ -58,18 +58,30 @@ flowchart TB
         end
 
         subgraph LOGIC["Logical Layer (Microservices/API)"]
-            BFF[API Gateway\n(frontend-oriented API composition layer)]:::svc
-            ING[Metadata Ingestion Service\nautomated discovery + fetch + normalization]:::svc
-            REGDISC[Federated Registry and Discoverability Service\nfor cross-NAP interoperability]:::svc
+            BFF[API Gateway
+(frontend-oriented API composition layer)]:::svc
+            ING[Metadata Ingestion Service
+automated discovery + fetch + normalization]:::svc
+            REGDISC[Federated Registry and Discoverability Service
+for cross-NAP interoperability]:::svc
+            DHS[NAP Dataset Health Status Service
+trusted dataset readiness evaluation]:::svc
             PATTERN2["Federated Registry and Discoverability architecture for cross-NAP interoperability"]:::system
-            VAL[Compliance Validation Service\ncompleteness + accuracy + consistency checks]:::svc
-            KPI[KPI Mapping & Analytics Service\nmetadata -> KPI -> DG MOVE mappings]:::svc
-            REP[Reporting Service\nguided + semi-auto + full-auto reporting]:::svc
-            REC[Recommendation Service\nnon-compliance improvement suggestions]:::svc
-            WF[Workflow Orchestrator\nend-to-end reporting workflow]:::svc
-            IAM[AuthN/AuthZ Service\nRBAC/ABAC, auditing]:::svc
+            VAL[Compliance Validation Service
+completeness + accuracy + consistency checks]:::svc
+            COMP[Complementary Data Service
+obtains additional reporting data]:::svc
+            KPI[KPI Mapping & Analytics Service
+metadata -> KPI -> DG MOVE mappings]:::svc
+            REP[Reporting Service
+guided + semi-auto + full-auto reporting]:::svc
+            REC[Recommendation Service
+non-compliance improvement suggestions]:::svc
+            WF[Workflow Orchestrator
+end-to-end reporting workflow]:::svc
+            IAM[AuthN/AuthZ Service
+RBAC/ABAC, auditing]:::svc
         end
-
         subgraph DATA["Data Layer"]
             MQ[(Event Bus / Queue)]:::data
             META[(Metadata Store\nRDF triplestore)]:::data
@@ -88,9 +100,12 @@ flowchart TB
     APIDOC --> BFF
     BFF --> IAM
     BFF --> WF
+    BFF --> DHS
     WF --> ING
     WF --> REGDISC
+    WF --> DHS
     WF --> VAL
+    WF --> COMP
     WF --> KPI
     WF --> REP
     WF --> REC
@@ -99,11 +114,14 @@ flowchart TB
     REGDISC -.implements.-> PATTERN2
     REGDISC --> NAP
     REGDISC --> INFRA
-    REGDISC -->|resolve dataset by ID and evaluate service readiness| NAP
+    DHS --> REGDISC
+    DHS --> NAP
+    DHS --> APPDB
     ING --> META
     VAL --> META
     VAL --> APPDB
     VAL --> DOCS
+    COMP --> APPDB
     KPI --> META
     KPI --> APPDB
     REP --> DGMOVE
@@ -114,6 +132,8 @@ flowchart TB
     ING <--> MQ
     VAL <--> MQ
     KPI <--> MQ
+    COMP <--> MQ
+    COMP <--> MQ
     REP <--> MQ
 
     IAM --> APPDB
@@ -262,6 +282,7 @@ sequenceDiagram
 - C4 Level 4 (Code) for Validation Service: `docs/architecture/c4-level4-validation.md`
 - C4 Level 4 (Code) for Reporting Service: `docs/architecture/c4-level4-reporting.md`
 - C4 Level 4 (Code) for Registry and Discoverability Service: `docs/architecture/c4-level4-registry-discoverability.md`
+- C4 Level 4 (Code) for NAP Dataset Health Status Service: `docs/architecture/c4-level4-dataset-health.md`
 - OpenAPI draft for BFF: `docs/api/openapi-bff.yaml`
 - OpenAPI draft for Validation Service: `docs/api/openapi-validation.yaml`
 - OpenAPI draft for Reporting Service: `docs/api/openapi-reporting.yaml`
@@ -287,3 +308,7 @@ sequenceDiagram
 - SVG Validation Components: `docs/architecture/svg/validation-components.svg`
 - PUML Reporting Components: `docs/architecture/puml/reporting-components.puml`
 - SVG Reporting Components: `docs/architecture/svg/reporting-components.svg`
+- Mermaid Dataset Health module view: `docs/architecture/mermaid/dataset-health-module-view.mmd`
+- Mermaid Dataset Health runtime flow: `docs/architecture/mermaid/dataset-health-primary-runtime-flow.mmd`
+- SVG Dataset Health module view: `docs/architecture/svg/dataset-health-module-view.svg`
+- SVG Dataset Health runtime flow: `docs/architecture/svg/dataset-health-primary-runtime-flow.svg`

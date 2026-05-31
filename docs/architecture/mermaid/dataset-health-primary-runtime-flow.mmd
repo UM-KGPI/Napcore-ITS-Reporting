@@ -1,0 +1,33 @@
+sequenceDiagram
+    participant UI as Web UI
+    participant FAPI as Frontend API Layer
+    participant API as DatasetHealthController
+    participant ORCH as DatasetHealthOrchestrator
+    participant CACHE as HealthStatusCache
+    participant RES as DatasetMetadataResolver
+    participant URL as DistributionEndpointExtractor
+    participant PROBE as AvailabilityProbe
+    participant TRUST as HealthTrustEvaluator
+    participant DB as AppDB
+    participant NAP as NAP dataset service
+
+    UI->>FAPI: View dataset health(datasetId)
+    FAPI->>API: GET /dataset-health/{datasetId}
+    API->>ORCH: getDatasetHealth(datasetId, refresh?)
+    ORCH->>CACHE: readLatestHealth(datasetId)
+    CACHE-->>ORCH: cached status + evidence
+    ORCH->>RES: resolveDataset(datasetId)
+    RES-->>ORCH: mobilityDCAT-AP dataset record
+    ORCH->>URL: extractEndpoint(dataset record)
+    URL-->>ORCH: accessUrl, downloadUrl
+    ORCH->>PROBE: probe(endpoint)
+    PROBE->>NAP: HEAD/GET dataset endpoint
+    NAP-->>PROBE: HTTP status + latency
+    PROBE-->>ORCH: probe result
+    ORCH->>TRUST: evaluate(metadata, probe, freshness)
+    TRUST-->>ORCH: readinessStatus + trustLevel
+    ORCH->>CACHE: persist latest health evidence
+    ORCH->>DB: persist latest health evidence
+    ORCH-->>API: dataset health status
+    API-->>FAPI: 200 OK
+    FAPI-->>UI: readinessStatus, checkedAt, evidence
