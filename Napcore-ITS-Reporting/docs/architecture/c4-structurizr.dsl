@@ -13,7 +13,7 @@ workspace "NAP ITS Reporter" "C4 model for the web application using a Federated
             bff = container "API Gateway" "Frontend-oriented API composition layer serving as a single API entry point and request orchestration for the UI." "Node.js"
 
             ingestion = container "Metadata Ingestion Service" "Discovers, fetches, and normalizes metadata from NAP in JSON-LD, TTL, and RDF/XML formats." "Node.js"
-            registryDiscoverability = container "Federated Registry and Discoverability Service" "Implements the Federated Registry and Discoverability architecture for cross-NAP interoperability by interlinking heterogeneous NAPs, providing searchable discovery of endpoints, datasets, and cross-NAP relationships, and maintaining trustable dataset health readiness derived from mobilityDCAT-AP metadata and active availability checks." "Node.js" {
+            registryDiscoverability = container "Federated Registry and Discoverability Service" "Implements the Federated Registry and Discoverability architecture for cross-NAP interoperability by interlinking heterogeneous NAPs and providing searchable discovery of endpoints, datasets, and cross-NAP relationships." "Node.js" {
                 datasetCatalogController = component "Dataset Catalog Controller" "REST entry point for registry dataset lookup and dataset health queries." "HTTP API"
                 datasetMetadataResolver = component "Dataset Metadata Resolver" "Resolves dataset identifiers to mobilityDCAT-AP metadata records and distributions." "Domain service"
                 distributionEndpointExtractor = component "Distribution Endpoint Extractor" "Extracts access, download, or service URLs from dataset distributions." "Domain service"
@@ -21,6 +21,7 @@ workspace "NAP ITS Reporter" "C4 model for the web application using a Federated
                 healthTrustEvaluator = component "Health Trust Evaluator" "Computes ready, degraded, unavailable, or unknown readiness states from metadata resolution, probe results, and freshness policy." "Policy component"
                 healthStatusCache = component "Health Status Cache" "Stores the latest trusted dataset health result and evidence." "Caching component"
             }
+            datasetHealth = container "NAP Dataset Health Status Service" "Trusted dataset readiness evaluation derived from mobilityDCAT-AP metadata and active availability checks." "Node.js"
             validation = container "Compliance Validation Service" "Validates compliance with mobilityDCAT-AP and DG MOVE rules including completeness, accuracy, and consistency checks." "Java" {
                 validationController = component "Validation Controller" "REST entry point for validation jobs." "HTTP API"
                 validationOrchestrator = component "Validation Orchestrator" "Executes SHACL, SPARQL, and quality checks." "Application service"
@@ -32,6 +33,7 @@ workspace "NAP ITS Reporter" "C4 model for the web application using a Federated
                 findingsAggregator = component "Findings Aggregator" "Normalizes findings and calculates score." "Domain service"
                 recommendationBuilder = component "Recommendation Builder" "Builds improvement recommendations." "Domain service"
             }
+            complementary = container "Complementary Data Service" "Obtains additional reporting data." "Node.js"
             kpi = container "KPI Mapping and Analytics Service" "Maps metadata to KPI and reporting templates." "Python"
             reporting = container "Reporting Service" "Guided, semi-automated, and automated report generation." "Node.js" {
                 reportingController = component "Reporting Controller" "REST entry point for reporting jobs." "HTTP API"
@@ -66,11 +68,14 @@ workspace "NAP ITS Reporter" "C4 model for the web application using a Federated
         apiDocs -> bff "Documents endpoint contracts"
         bff -> registryDiscoverability "Queries registry and dataset health"
         bff -> workflow "Calls workflow APIs"
+        bff -> datasetHealth "Queries dataset readiness"
         bff -> iam "Authorizes requests"
 
         workflow -> ingestion "Starts ingestion"
         workflow -> registryDiscoverability "Calls interlinking and discovery services"
+        workflow -> datasetHealth "Checks dataset readiness"
         workflow -> validation "Starts validation"
+        workflow -> complementary "Obtains additional reporting data"
         workflow -> kpi "Calculates KPI"
         workflow -> reporting "Starts reporting"
         workflow -> recommendation "Builds recommendations"
@@ -78,12 +83,17 @@ workspace "NAP ITS Reporter" "C4 model for the web application using a Federated
         ingestion -> registryDiscoverability "Uses ingestion and discovery connectors"
         registryDiscoverability -> nap "HTTP API"
         registryDiscoverability -> infra "Infrastructure APIs"
+        datasetHealth -> registryDiscoverability "Resolves dataset health inputs"
+        datasetHealth -> nap "HTTP API"
+        datasetHealth -> appDb "Stores trusted dataset status"
         ingestion -> metadataStore "Stores RDF"
 
         validation -> metadataStore "Reads RDF"
         validation -> appDb "Stores findings"
         validation -> docsStore "Stores non-compliance reports"
         validation -> eventBus "Publishes ValidationCompleted"
+
+        complementary -> appDb "Stores supplementary data"
 
         kpi -> metadataStore "Reads RDF"
         kpi -> appDb "Stores KPI results"
@@ -148,7 +158,7 @@ workspace "NAP ITS Reporter" "C4 model for the web application using a Federated
 
         container reporter "Container" {
             include *
-            autoLayout tb
+            autoLayout lr
         }
 
         component validation "ValidationComponents" {

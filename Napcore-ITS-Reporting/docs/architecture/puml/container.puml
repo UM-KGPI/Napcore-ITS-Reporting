@@ -24,18 +24,19 @@ package "NAP ITS Reporter" {
     rectangle "API Documentation Portal\nOpenAPI/Swagger" as APIDOC #d9f2e6
   }
 
-  package "Logical Layer (Microservices/API)" {
+    package "Logical Layer (Microservices/API)" {
     rectangle "API Gateway / BFF\nREST API + contracts" as BFF #dbeafe
     rectangle "Metadata Ingestion Service\nautomated discovery + fetch + normalization" as ING #dbeafe
     rectangle "Federated Registry and Discoverability Service\nfor cross-NAP interoperability" as REGDISC #dbeafe
+    rectangle "NAP Dataset Health Status Service\ntrusted dataset readiness evaluation" as DHS #dbeafe
     rectangle "Compliance Validation Service\ncompleteness + accuracy + consistency checks" as VAL #dbeafe
+    rectangle "Complementary Data Service\nobtains additional reporting data" as COMP #dbeafe
     rectangle "KPI Mapping and Analytics Service\nmetadata -> KPI -> DG MOVE mappings" as KPI #dbeafe
     rectangle "Reporting Service\nguided + semi-auto + full-auto reporting" as REP #dbeafe
     rectangle "Recommendation Service\nnon-compliance improvement suggestions" as REC #dbeafe
     rectangle "Workflow Orchestrator\nend-to-end reporting workflow" as WF #dbeafe
     rectangle "AuthN/AuthZ Service" as IAM #dbeafe
-  }
-
+    }
   package "Data Layer" {
     database "Metadata Store\n(RDF triplestore)" as META
     database "Application DB" as APPDB
@@ -54,10 +55,13 @@ USER --> APIDOC
 APIDOC --> BFF
 BFF --> IAM
 BFF --> WF
+BFF --> DHS
 
 WF --> ING
 WF --> REGDISC
+WF --> DHS
 WF --> VAL
+WF --> COMP
 WF --> KPI
 WF --> REP
 WF --> REC
@@ -66,10 +70,14 @@ ING --> REGDISC
 REGDISC ..> PATTERN : implements
 REGDISC --> NAP
 REGDISC --> INFRA
+DHS --> REGDISC
+DHS --> NAP
+DHS --> APPDB
 ING --> META
 VAL --> META
 VAL --> APPDB
 VAL --> DOCS
+COMP --> APPDB
 KPI --> META
 KPI --> APPDB
 REP --> DGT
@@ -80,6 +88,7 @@ REC --> APPDB
 ING <--> MQ
 VAL <--> MQ
 KPI <--> MQ
+COMP <--> MQ
 REP <--> MQ
 
 IAM --> APPDB
