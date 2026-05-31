@@ -35,14 +35,12 @@ flowchart LR
 	PATTERN["Federated Registry and Discoverability architecture for cross-NAP interoperability"]:::system
 
 	NAP[NAP catalog and API endpoints]:::ext
-	INFRA[Infrastructure services\nregistry, storage, messaging]:::ext
 	DGMOVE[DG MOVE templates and reporting requirements]:::ext
 	STD[mobilityDCAT-AP and RDF standards\nJSON-LD, TTL, RDF/XML]:::ext
 
 	U -->|review, validate, report| APP
 	APP -.implements.-> PATTERN
 	APP -->|interlink heterogeneous NAPs and discover endpoints, datasets, and relations| NAP
-	APP -->|interoperable integrations| INFRA
 	APP -->|apply reporting templates and KPI mappings| DGMOVE
 	APP -->|apply validation rules and semantics| STD
 ```
@@ -66,6 +64,7 @@ flowchart LR
 
 | Documentation | Paired SVG export(s) |
 | --- | --- |
+| [docs/architecture/container-diagram-summary.md](docs/architecture/container-diagram-summary.md) | Short text summary of the Level 2 container view |
 | [docs/architecture/c4-design.md](docs/architecture/c4-design.md) | [docs/architecture/svg/system-context.svg](docs/architecture/svg/system-context.svg), [docs/architecture/svg/container.svg](docs/architecture/svg/container.svg) |
 | [docs/architecture/c4-structurizr.dsl](docs/architecture/c4-structurizr.dsl) | Uses the same architectural views represented by [docs/architecture/svg/system-context.svg](docs/architecture/svg/system-context.svg) and [docs/architecture/svg/container.svg](docs/architecture/svg/container.svg) |
 | [docs/architecture/c4-level4-validation.md](docs/architecture/c4-level4-validation.md) | [docs/architecture/svg/validation-components.svg](docs/architecture/svg/validation-components.svg) |
