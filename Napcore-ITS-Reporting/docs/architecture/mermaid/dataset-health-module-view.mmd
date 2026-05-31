@@ -1,0 +1,35 @@
+flowchart TB
+    classDef mod fill:#2563eb,stroke:#1e3a8a,color:#fff
+    classDef data fill:#7c3aed,stroke:#4c1d95,color:#fff
+    classDef ext fill:#d97706,stroke:#92400e,color:#fff
+
+    API[DatasetHealthController]:::mod
+    AUTH[AuthorizationGuard]:::mod
+    ORCH[DatasetHealthOrchestrator]:::mod
+    RES[DatasetMetadataResolver]:::mod
+    URL[DistributionEndpointExtractor]:::mod
+    PROBE[AvailabilityProbe]:::mod
+    TRUST[HealthTrustEvaluator]:::mod
+    CACHE[HealthStatusCache]:::mod
+    PUB[EventPublisher]:::mod
+
+    META[(RDF Metadata Store)]:::data
+    APPDB[(Application DB)]:::data
+    NAP[NAP dataset delivery service]:::ext
+    BUS[Event Bus]:::ext
+
+    API --> AUTH
+    AUTH --> ORCH
+    ORCH --> RES
+    ORCH --> URL
+    ORCH --> PROBE
+    ORCH --> TRUST
+    ORCH --> CACHE
+    ORCH --> PUB
+
+    RES --> META
+    URL --> META
+    PROBE --> NAP
+    TRUST --> APPDB
+    CACHE --> APPDB
+    PUB --> BUS

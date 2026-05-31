@@ -262,6 +262,7 @@ sequenceDiagram
 - C4 Level 4 (Code) for Validation Service: `docs/architecture/c4-level4-validation.md`
 - C4 Level 4 (Code) for Reporting Service: `docs/architecture/c4-level4-reporting.md`
 - C4 Level 4 (Code) for Registry and Discoverability Service: `docs/architecture/c4-level4-registry-discoverability.md`
+- C4 Level 4 (Code) for NAP Dataset Health Status Service: `docs/architecture/c4-level4-dataset-health.md`
 - OpenAPI draft for BFF: `docs/api/openapi-bff.yaml`
 - OpenAPI draft for Validation Service: `docs/api/openapi-validation.yaml`
 - OpenAPI draft for Reporting Service: `docs/api/openapi-reporting.yaml`
@@ -287,3 +288,7 @@ sequenceDiagram
 - SVG Validation Components: `docs/architecture/svg/validation-components.svg`
 - PUML Reporting Components: `docs/architecture/puml/reporting-components.puml`
 - SVG Reporting Components: `docs/architecture/svg/reporting-components.svg`
+- Mermaid Dataset Health module view: `docs/architecture/mermaid/dataset-health-module-view.mmd`
+- Mermaid Dataset Health runtime flow: `docs/architecture/mermaid/dataset-health-primary-runtime-flow.mmd`
+- SVG Dataset Health module view: `docs/architecture/svg/dataset-health-module-view.svg`
+- SVG Dataset Health runtime flow: `docs/architecture/svg/dataset-health-primary-runtime-flow.svg`
