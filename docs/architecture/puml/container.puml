@@ -3,7 +3,7 @@
 skinparam shadowing false
 skinparam componentStyle rectangle
 skinparam packageStyle rectangle
-top to bottom direction
+left to right direction
 
 skinparam rectangle {
   BackgroundColor #eef5ff
@@ -14,31 +14,30 @@ skinparam database {
   BorderColor #6b21a8
 }
 
-actor "Member state" as USER
+actor "Member state / NAP operator" as USER
 
 package "NAP ITS Reporter" {
-  rectangle "European Mobility Dataspace (EMDS) interface" as PATTERN #eef5ff
+  rectangle "Federated Registry and Discoverability architecture for cross-NAP interoperability" as PATTERN #eef5ff
 
-  package "Presentation Layer" as PRESENTATION {
-    rectangle "Web UI\ncompliance dashboard + workflow view" as UI #d9f2e6
+  package "Presentation Layer" {
+    rectangle "Web UI\nvalidation dashboard + workflow view" as UI #d9f2e6
     rectangle "API Documentation Portal\nOpenAPI/Swagger" as APIDOC #d9f2e6
   }
 
-  package "Logical Layer (Microservices/API)" as LOGIC {
-    rectangle "API Gateway\nREST API + contracts" as BFF #dbeafe
-    rectangle "Reporting Orchestrator\nend-to-end reporting workflow" as WF #dbeafe
-    rectangle "Authorization service" as IAM #dbeafe
+    package "Logical Layer (Microservices/API)" {
+    rectangle "API Gateway / BFF\nREST API + contracts" as BFF #dbeafe
+    rectangle "Metadata Ingestion Service\nautomated discovery + fetch + normalization" as ING #dbeafe
     rectangle "Federated Registry and Discoverability Service\nfor cross-NAP interoperability" as REGDISC #dbeafe
     rectangle "NAP Dataset Health Status Service\ntrusted dataset readiness evaluation" as DHS #dbeafe
-    rectangle "1. Reporting Service\nguided + semi-auto + full-auto reporting" as REP #dbeafe
-    rectangle "2. Metadata Ingestion Service\nautomated discovery + fetch + normalization" as ING #dbeafe
-    rectangle "2.1 Validation service\nmobilityDCAT-AP consisteny check" as VAL #dbeafe
-    rectangle "3. Complementary Data Service\nobtains additional reporting data" as COMP #dbeafe
-    rectangle "4. KPI Mapping and Analytics Service\nmetadata -> KPI -> DG MOVE mappings" as KPI #dbeafe
+    rectangle "Compliance Validation Service\ncompleteness + accuracy + consistency checks" as VAL #dbeafe
+    rectangle "Complementary Data Service\nobtains additional reporting data" as COMP #dbeafe
+    rectangle "KPI Mapping and Analytics Service\nmetadata -> KPI -> DG MOVE mappings" as KPI #dbeafe
+    rectangle "Reporting Service\nguided + semi-auto + full-auto reporting" as REP #dbeafe
     rectangle "Recommendation Service\nnon-compliance improvement suggestions" as REC #dbeafe
-  }
-
-  package "Data Layer" as DATA {
+    rectangle "Workflow Orchestrator\nend-to-end reporting workflow" as WF #dbeafe
+    rectangle "AuthN/AuthZ Service" as IAM #dbeafe
+    }
+  package "Data Layer" {
     database "Metadata Store\n(RDF triplestore)" as META
     database "Application DB" as APPDB
     database "Document Store\nreports + compliance outputs" as DOCS
@@ -47,6 +46,7 @@ package "NAP ITS Reporter" {
 }
 
 rectangle "NAP Catalog and API Endpoints" as NAP #fff3e0
+rectangle "Infrastructure Services" as INFRA #fff3e0
 rectangle "DG MOVE Templates" as DGT #fff3e0
 
 USER --> UI
@@ -61,14 +61,15 @@ WF --> ING
 WF --> REGDISC
 WF --> DHS
 WF --> VAL
+WF --> COMP
 WF --> KPI
 WF --> REP
-WF --> COMP
 WF --> REC
 
 ING --> REGDISC
 REGDISC ..> PATTERN : implements
 REGDISC --> NAP
+REGDISC --> INFRA
 DHS --> REGDISC
 DHS --> NAP
 DHS --> APPDB
@@ -76,9 +77,9 @@ ING --> META
 VAL --> META
 VAL --> APPDB
 VAL --> DOCS
+COMP --> APPDB
 KPI --> META
 KPI --> APPDB
-COMP --> APPDB
 REP --> DGT
 REP --> DOCS
 REP --> APPDB
@@ -91,8 +92,4 @@ COMP <--> MQ
 REP <--> MQ
 
 IAM --> APPDB
-
-' Force layer stacking order from top to bottom
-PRESENTATION -[hidden]down-> LOGIC
-LOGIC -[hidden]down-> DATA
 @enduml

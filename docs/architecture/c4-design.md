@@ -21,18 +21,20 @@ flowchart LR
     classDef ext fill:#d97706,stroke:#92400e,color:#fff
     classDef user fill:#374151,stroke:#111827,color:#fff
 
-    U[Member state]:::user
+    U[Member state / NAP operator]:::user
 
     APP["NAP ITS Reporter\n(Web Application)"]:::app
     PATTERN["Federated Registry and Discoverability architecture for cross-NAP interoperability"]:::system
 
     NAP[NAP catalog and API endpoints]:::ext
+    INFRA[Infrastructure services\nregistry, storage, messaging]:::ext
     DGMOVE[DG MOVE templates and reporting requirements]:::ext
     STD[mobilityDCAT-AP and RDF standards\nJSON-LD, TTL, RDF/XML]:::ext
 
     U -->|review, validate, report| APP
     APP -.implements.-> PATTERN
     APP -->|interlink heterogeneous NAPs and discover endpoints, datasets, and relations| NAP
+    APP -->|interoperable integrations| INFRA
     APP -->|apply reporting templates and KPI mappings| DGMOVE
     APP -->|apply validation rules and semantics| STD
 ```
@@ -40,36 +42,46 @@ flowchart LR
 ## 2) C4 - Container Diagram (Level 2)
 
 ```mermaid
-flowchart TB
+flowchart LR
     classDef app fill:#0f766e,stroke:#0a4f4a,color:#fff
     classDef svc fill:#2563eb,stroke:#1e3a8a,color:#fff
     classDef data fill:#7c3aed,stroke:#4c1d95,color:#fff
     classDef ext fill:#d97706,stroke:#92400e,color:#fff
     classDef user fill:#374151,stroke:#111827,color:#fff
 
-    U[Member state]:::user
+    U[Member state / NAP operator]:::user
 
     subgraph PLATFORM["NAP ITS Reporter"]
         subgraph PRESENTATION["Presentation Layer"]
-            UI[Web UI\ncompliance dashboard + workflow view]:::app
+            UI[Web UI\nvalidation dashboard + workflow view]:::app
             APIDOC[API Documentation Portal\nOpenAPI/Swagger]:::app
         end
 
         subgraph LOGIC["Logical Layer (Microservices/API)"]
-            BFF[API Gateway\n(frontend-oriented API composition layer)]:::svc
-            ING[2. Metadata Ingestion Service\nautomated discovery + fetch + normalization]:::svc
-            REGDISC[Federated Registry and Discoverability Service\nfor cross-NAP interoperability]:::svc
-            DHS[NAP Dataset Health Status Service\ntrusted dataset readiness evaluation]:::svc
-            PATTERN2["European Mobility Dataspace (EMDS) interface"]:::system
-            VAL[2.1 Validation service\nmobilityDCAT-AP consisteny check]:::svc
-            KPI[4. KPI Mapping & Analytics Service\nmetadata -> KPI -> DG MOVE mappings]:::svc
-            REP[1. Reporting Service\nguided + semi-auto + full-auto reporting]:::svc
-            COMP[3. Complementary Data Service\nobtains additional reporting data]:::svc
-            REC[Recommendation Service\nnon-compliance improvement suggestions]:::svc
-            WF[Reporting Orchestrator\nend-to-end reporting workflow]:::svc
-            IAM[Authorization service\nRBAC/ABAC, auditing]:::svc
+            BFF[API Gateway
+(frontend-oriented API composition layer)]:::svc
+            ING[Metadata Ingestion Service
+automated discovery + fetch + normalization]:::svc
+            REGDISC[Federated Registry and Discoverability Service
+for cross-NAP interoperability]:::svc
+            DHS[NAP Dataset Health Status Service
+trusted dataset readiness evaluation]:::svc
+            PATTERN2["Federated Registry and Discoverability architecture for cross-NAP interoperability"]:::system
+            VAL[Compliance Validation Service
+completeness + accuracy + consistency checks]:::svc
+            COMP[Complementary Data Service
+obtains additional reporting data]:::svc
+            KPI[KPI Mapping & Analytics Service
+metadata -> KPI -> DG MOVE mappings]:::svc
+            REP[Reporting Service
+guided + semi-auto + full-auto reporting]:::svc
+            REC[Recommendation Service
+non-compliance improvement suggestions]:::svc
+            WF[Workflow Orchestrator
+end-to-end reporting workflow]:::svc
+            IAM[AuthN/AuthZ Service
+RBAC/ABAC, auditing]:::svc
         end
-
         subgraph DATA["Data Layer"]
             MQ[(Event Bus / Queue)]:::data
             META[(Metadata Store\nRDF triplestore)]:::data
@@ -79,6 +91,7 @@ flowchart TB
     end
 
     NAP[NAP catalog and API endpoints]:::ext
+    INFRA[Infrastructure services]:::ext
     DGMOVE[DG MOVE templates]:::ext
 
     U --> UI
@@ -92,24 +105,25 @@ flowchart TB
     WF --> REGDISC
     WF --> DHS
     WF --> VAL
+    WF --> COMP
     WF --> KPI
     WF --> REP
-    WF --> COMP
     WF --> REC
 
     ING --> REGDISC
     REGDISC -.implements.-> PATTERN2
     REGDISC --> NAP
+    REGDISC --> INFRA
     DHS --> REGDISC
-    DHS -->|probe resolved dataset service endpoints| NAP
+    DHS --> NAP
     DHS --> APPDB
     ING --> META
     VAL --> META
     VAL --> APPDB
     VAL --> DOCS
+    COMP --> APPDB
     KPI --> META
     KPI --> APPDB
-    COMP --> APPDB
     REP --> DGMOVE
     REP --> DOCS
     REP --> APPDB
@@ -118,6 +132,7 @@ flowchart TB
     ING <--> MQ
     VAL <--> MQ
     KPI <--> MQ
+    COMP <--> MQ
     COMP <--> MQ
     REP <--> MQ
 
@@ -237,7 +252,7 @@ Primary runtime flow:
 ```mermaid
 sequenceDiagram
     participant UI as Web UI
-    participant BFF as API Gateway
+    participant BFF as API Gateway / BFF
     participant REG as Registry and Discoverability Service
     participant META as Metadata Store
     participant NAP as NAP dataset service
@@ -255,11 +270,11 @@ sequenceDiagram
 ## 4) Requirement-to-C4 Coverage (Summary)
 
 - Metadata collection: `Metadata Ingestion Service` and `Federated Registry & Discoverability Service` with automated discovery/fetch from NAP and support for JSON-LD, Turtle (.ttl), and RDF/XML (.rdf).
-- Dataset readiness and trust: `NAP Dataset Health Status Service` resolves each `datasetId` via `Federated Registry & Discoverability Service`, probes the referenced dataset service, and exposes a trustable dataset health status with `ready` as the primary healthy state.
+- Dataset readiness and trust: `Federated Registry & Discoverability Service` resolves each `datasetId` from mobilityDCAT-AP metadata, probes the referenced dataset service, and exposes a trustable dataset health status with `ready` as the primary healthy state.
 - Compliance verification: `Compliance Validation Service` with completeness, accuracy, and consistency checks, plus non-compliance report and recommendation generation.
-- Reporting workflow: `Reporting Orchestrator`, `Guided Report Assistant`, KPI mappings, DG MOVE template mappings, and semi/full automation modes.
-- Modular architecture and interoperability: microservices with explicit presentation, logical, and data layers; clear service-to-service data flows; federated registry and discoverability modules for NAP catalog services.
-- System architecture and security: `API Gateway (frontend-oriented API composition layer)`, standardized data models and API contracts, `Authorization service`, access control, and event-driven integration.
+- Reporting workflow: `Workflow Orchestrator`, `Guided Report Assistant`, KPI mappings, DG MOVE template mappings, and semi/full automation modes.
+- Modular architecture and interoperability: microservices with explicit presentation, logical, and data layers; clear service-to-service data flows; federated registry and discoverability modules for NAP catalog and infrastructure services.
+- System architecture and security: `API Gateway (frontend-oriented API composition layer)`, standardized data models and API contracts, `AuthN/AuthZ`, access control, and event-driven integration.
 - UI requirements: `Web UI` with intuitive workflow control, compliance visualization, recommendation access, and transparent reporting workflow progress.
 
 ## 5) Completed Next-Step Artifacts
@@ -267,6 +282,7 @@ sequenceDiagram
 - C4 Level 4 (Code) for Validation Service: `docs/architecture/c4-level4-validation.md`
 - C4 Level 4 (Code) for Reporting Service: `docs/architecture/c4-level4-reporting.md`
 - C4 Level 4 (Code) for Registry and Discoverability Service: `docs/architecture/c4-level4-registry-discoverability.md`
+- C4 Level 4 (Code) for NAP Dataset Health Status Service: `docs/architecture/c4-level4-dataset-health.md`
 - OpenAPI draft for BFF: `docs/api/openapi-bff.yaml`
 - OpenAPI draft for Validation Service: `docs/api/openapi-validation.yaml`
 - OpenAPI draft for Reporting Service: `docs/api/openapi-reporting.yaml`
@@ -292,3 +308,7 @@ sequenceDiagram
 - SVG Validation Components: `docs/architecture/svg/validation-components.svg`
 - PUML Reporting Components: `docs/architecture/puml/reporting-components.puml`
 - SVG Reporting Components: `docs/architecture/svg/reporting-components.svg`
+- Mermaid Dataset Health module view: `docs/architecture/mermaid/dataset-health-module-view.mmd`
+- Mermaid Dataset Health runtime flow: `docs/architecture/mermaid/dataset-health-primary-runtime-flow.mmd`
+- SVG Dataset Health module view: `docs/architecture/svg/dataset-health-module-view.svg`
+- SVG Dataset Health runtime flow: `docs/architecture/svg/dataset-health-primary-runtime-flow.svg`
