@@ -1,0 +1,28 @@
+sequenceDiagram
+    participant UI as Web UI
+    participant FAPI as Frontend API Layer
+    participant API as ReportingController
+    participant ORCH as ReportingOrchestrator
+    participant MAP as KpiMappingEngine
+    participant DGMAP as DgMoveTemplateMapper
+    participant AUTO as AutomationModePlanner
+    participant GEN as ReportGenerator
+    participant QA as ReportQualityGate
+    participant DOCS as DocumentStore
+
+    UI->>FAPI: Start report generation
+    FAPI->>API: POST /reports (period, scope, mode)
+    API->>ORCH: startReportGeneration(cmd)
+    ORCH->>MAP: resolve KPI mappings
+    ORCH->>DGMAP: resolve DG MOVE template mapping
+    ORCH->>AUTO: select mode (guided/semi/auto)
+    MAP-->>ORCH: mapped indicators
+    DGMAP-->>ORCH: mapped template fields
+    ORCH->>GEN: generate draft report
+    GEN-->>ORCH: draft artifact
+    ORCH->>QA: validate report quality/completeness
+    QA-->>ORCH: pass + warnings
+    ORCH->>DOCS: save final report versions
+    ORCH-->>API: reportId
+    API-->>FAPI: 202 Accepted (reportId)
+    FAPI-->>UI: 202 Accepted (reportId)

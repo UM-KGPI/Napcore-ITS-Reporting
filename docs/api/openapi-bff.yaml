@@ -1,0 +1,664 @@
+openapi: 3.1.0
+info:
+  title: mobilityDCAT-AP Pilot BFF API
+  version: 0.1.0
+  description: |
+    Initial API contract for the web application's Backend-for-Frontend layer,
+    implementing a Federated Registry and Discoverability architecture for cross-NAP interoperability.
+servers:
+  - url: https://pilot.example.eu/api
+    description: Pilot environment
+tags:
+  - name: Ingestion
+  - name: Registry
+  - name: Dataset Health
+  - name: Search
+  - name: Relations
+  - name: Validation
+  - name: Reporting
+  - name: Workflow
+  - name: Recommendations
+paths:
+  /ingestions:
+    post:
+      tags: [Ingestion]
+      summary: Start metadata ingestion job
+      operationId: startIngestion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IngestionRequest'
+      responses:
+        '202':
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AsyncJobAccepted'
+  /validations:
+    post:
+      tags: [Validation]
+      summary: Start compliance validation
+      operationId: startValidation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValidationRequest'
+      responses:
+        '202':
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AsyncJobAccepted'
+  /validations/{validationId}:
+    get:
+      tags: [Validation]
+      summary: Get validation status and summary
+      operationId: getValidation
+      parameters:
+        - $ref: '#/components/parameters/ValidationId'
+      responses:
+        '200':
+          description: Validation state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationSummary'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /reports:
+    post:
+      tags: [Reporting]
+      summary: Start report generation
+      operationId: startReport
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReportRequest'
+      responses:
+        '202':
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AsyncJobAccepted'
+  /reports/{reportId}:
+    get:
+      tags: [Reporting]
+      summary: Get report status
+      operationId: getReport
+      parameters:
+        - $ref: '#/components/parameters/ReportId'
+      responses:
+        '200':
+          description: Report status and output links
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportSummary'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /reports/{reportId}/exports/{format}:
+    get:
+      tags: [Reporting]
+      summary: Download generated report export
+      operationId: downloadReportExport
+      parameters:
+        - $ref: '#/components/parameters/ReportId'
+        - name: format
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [pdf, html, json]
+      responses:
+        '200':
+          description: Binary or JSON export payload
+  /workflow/{workflowId}:
+    get:
+      tags: [Workflow]
+      summary: Get guided workflow progress
+      operationId: getWorkflowProgress
+      parameters:
+        - name: workflowId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Current guided workflow step
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowProgress'
+  /recommendations/{contextId}:
+    get:
+      tags: [Recommendations]
+      summary: Get recommendations for improving metadata quality
+      operationId: getRecommendations
+      parameters:
+        - name: contextId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Recommendations list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Recommendation'
+  /registry/naps:
+    get:
+      tags: [Registry]
+      summary: List registered NAP endpoints and profiles
+      operationId: listRegisteredNaps
+      responses:
+        '200':
+          description: Registry entries
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/NapRegistryEntry'
+  /registry/naps/{napId}:
+    get:
+      tags: [Registry]
+      summary: Get NAP registry entry details
+      operationId: getRegistryNap
+      parameters:
+        - $ref: '#/components/parameters/NapId'
+      responses:
+        '200':
+          description: Registry entry details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NapRegistryEntry'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /registry/datasets/{datasetId}:
+    get:
+      tags: [Registry]
+      summary: Get dataset registry details resolved from mobilityDCAT-AP metadata
+      operationId: getRegistryDataset
+      parameters:
+        - $ref: '#/components/parameters/DatasetId'
+      responses:
+        '200':
+          description: Dataset registry details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegistryDataset'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /registry/datasets/{datasetId}/health:
+    get:
+      tags: [Dataset Health]
+      summary: Get dataset health and readiness status
+      description: |
+        Resolves the dataset by identifier from mobilityDCAT-AP metadata and returns
+        the current trustable health assessment of the referenced dataset service.
+      operationId: getDatasetHealth
+      parameters:
+        - $ref: '#/components/parameters/DatasetId'
+        - name: refresh
+          in: query
+          required: false
+          description: Force a fresh availability probe instead of serving cached status.
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Dataset health status
+          content:
+            application/json:
+              examples:
+                readyDataset:
+                  summary: Ready dataset resolved from mobilityDCAT-AP metadata
+                  value:
+                    datasetId: eu.at.nap.dataset.roadworks-001
+                    readinessStatus: ready
+                    availability: reachable
+                    trustLevel: high
+                    checkedAt: '2026-05-26T09:12:34Z'
+                    expiresAt: '2026-05-26T10:12:34Z'
+                    probeMethod: head
+                    responseTimeMs: 184
+                    httpStatus: 200
+                    metadataSource: https://nap.example.at/catalog/datasets/roadworks-001.jsonld
+                    distributionUrl: https://api.nap.example.at/datasets/roadworks-001
+                    evidence:
+                      - type: metadata-resolution
+                        value: datasetId resolved from mobilityDCAT-AP dataset graph
+                        observedAt: '2026-05-26T09:12:33Z'
+                      - type: endpoint-probe
+                        value: HEAD request returned HTTP 200 in 184 ms
+                        observedAt: '2026-05-26T09:12:34Z'
+                      - type: freshness-policy
+                        value: trusted for 60 minutes
+                        observedAt: '2026-05-26T09:12:34Z'
+                    message: Dataset delivery service is reachable and trusted.
+              schema:
+                $ref: '#/components/schemas/DatasetHealthStatus'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /search:
+    get:
+      tags: [Search]
+      summary: Search endpoints, datasets, and cross-NAP links
+      operationId: searchRegistry
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [nap, endpoint, dataset, relation]
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SearchResult'
+  /relations:
+    get:
+      tags: [Relations]
+      summary: List cross-NAP relations
+      operationId: listRelations
+      parameters:
+        - name: sourceNapId
+          in: query
+          schema:
+            type: string
+        - name: targetNapId
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Relation list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RegistryRelation'
+  /relations/{relationId}:
+    get:
+      tags: [Relations]
+      summary: Get a specific cross-NAP relation
+      operationId: getRelation
+      parameters:
+        - $ref: '#/components/parameters/RelationId'
+      responses:
+        '200':
+          description: Relation details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegistryRelation'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  parameters:
+    ValidationId:
+      name: validationId
+      in: path
+      required: true
+      schema:
+        type: string
+    ReportId:
+      name: reportId
+      in: path
+      required: true
+      schema:
+        type: string
+    NapId:
+      name: napId
+      in: path
+      required: true
+      schema:
+        type: string
+    RelationId:
+      name: relationId
+      in: path
+      required: true
+      schema:
+        type: string
+    DatasetId:
+      name: datasetId
+      in: path
+      required: true
+      schema:
+        type: string
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  schemas:
+    AsyncJobAccepted:
+      type: object
+      required: [jobId, status, submittedAt]
+      properties:
+        jobId:
+          type: string
+        status:
+          type: string
+          enum: [accepted, running]
+        submittedAt:
+          type: string
+          format: date-time
+    IngestionRequest:
+      type: object
+      required: [sources, formats]
+      properties:
+        sources:
+          type: array
+          items:
+            type: string
+            format: uri
+        formats:
+          type: array
+          items:
+            type: string
+            enum: [json-ld, ttl, rdf-xml]
+    ValidationRequest:
+      type: object
+      required: [datasetRef, profileVersion]
+      properties:
+        datasetRef:
+          type: string
+        profileVersion:
+          type: string
+        strictMode:
+          type: boolean
+          default: true
+    ValidationSummary:
+      type: object
+      required: [validationId, status, score, findings]
+      properties:
+        validationId:
+          type: string
+        status:
+          type: string
+          enum: [accepted, running, completed, failed]
+        score:
+          type: number
+          minimum: 0
+          maximum: 100
+        findings:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationFinding'
+    ValidationFinding:
+      type: object
+      required: [code, severity, message]
+      properties:
+        code:
+          type: string
+        severity:
+          type: string
+          enum: [info, warning, error]
+        message:
+          type: string
+        path:
+          type: string
+        recommendation:
+          type: string
+    ReportRequest:
+      type: object
+      required: [period, scope, mode]
+      properties:
+        period:
+          type: string
+          example: 2026-Q2
+        scope:
+          type: string
+          enum: [national, regional, operator]
+        mode:
+          type: string
+          enum: [guided, semi-auto, auto]
+    ReportSummary:
+      type: object
+      required: [reportId, status, generatedAt]
+      properties:
+        reportId:
+          type: string
+        status:
+          type: string
+          enum: [accepted, running, completed, failed]
+        generatedAt:
+          type: string
+          format: date-time
+        exports:
+          type: array
+          items:
+            type: object
+            properties:
+              format:
+                type: string
+                enum: [pdf, html, json]
+              downloadUrl:
+                type: string
+                format: uri
+    WorkflowProgress:
+      type: object
+      required: [workflowId, step, completedSteps]
+      properties:
+        workflowId:
+          type: string
+        step:
+          type: string
+        completedSteps:
+          type: array
+          items:
+            type: string
+        nextAction:
+          type: string
+    Recommendation:
+      type: object
+      required: [id, severity, text]
+      properties:
+        id:
+          type: string
+        severity:
+          type: string
+          enum: [low, medium, high]
+        text:
+          type: string
+        relatedRule:
+          type: string
+    NapRegistryEntry:
+      type: object
+      required: [napId, name, endpointUrl, supportedFormats, lastUpdated]
+      properties:
+        napId:
+          type: string
+        name:
+          type: string
+        endpointUrl:
+          type: string
+          format: uri
+        supportedFormats:
+          type: array
+          items:
+            type: string
+            enum: [json-ld, ttl, rdf-xml]
+        lastUpdated:
+          type: string
+          format: date-time
+        explainabilityNote:
+          type: string
+    RegistryDataset:
+      type: object
+      required: [datasetId, napId, title, metadataRecordUrl, distribution]
+      properties:
+        datasetId:
+          type: string
+        napId:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        metadataRecordUrl:
+          type: string
+          format: uri
+        keywords:
+          type: array
+          items:
+            type: string
+        distribution:
+          $ref: '#/components/schemas/DatasetDistribution'
+        health:
+          $ref: '#/components/schemas/DatasetHealthStatus'
+    DatasetDistribution:
+      type: object
+      required: [accessUrl]
+      properties:
+        accessUrl:
+          type: string
+          format: uri
+        downloadUrl:
+          type: string
+          format: uri
+        mediaType:
+          type: string
+        format:
+          type: string
+    DatasetHealthStatus:
+      type: object
+      required: [datasetId, readinessStatus, availability, checkedAt, trustLevel]
+      properties:
+        datasetId:
+          type: string
+        readinessStatus:
+          type: string
+          description: Primary operational status used by catalog and API consumers.
+          enum: [ready, degraded, unavailable, unknown]
+        availability:
+          type: string
+          enum: [reachable, intermittent, unreachable, not-tested]
+        trustLevel:
+          type: string
+          enum: [high, medium, low]
+        checkedAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+        probeMethod:
+          type: string
+          enum: [head, get, api]
+        responseTimeMs:
+          type: integer
+          minimum: 0
+        httpStatus:
+          type: integer
+          minimum: 100
+          maximum: 599
+        metadataSource:
+          type: string
+          format: uri
+        distributionUrl:
+          type: string
+          format: uri
+        evidence:
+          type: array
+          items:
+            $ref: '#/components/schemas/HealthEvidence'
+        message:
+          type: string
+    HealthEvidence:
+      type: object
+      required: [type, value]
+      properties:
+        type:
+          type: string
+          enum: [metadata-resolution, endpoint-probe, freshness-policy]
+        value:
+          type: string
+        observedAt:
+          type: string
+          format: date-time
+    SearchResult:
+      type: object
+      required: [id, type, title]
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum: [nap, endpoint, dataset, relation]
+        title:
+          type: string
+        snippet:
+          type: string
+        score:
+          type: number
+        datasetHealth:
+          $ref: '#/components/schemas/DatasetHealthStatus'
+    RegistryRelation:
+      type: object
+      required: [relationId, sourceNapId, targetNapId, relationType]
+      properties:
+        relationId:
+          type: string
+        sourceNapId:
+          type: string
+        targetNapId:
+          type: string
+        relationType:
+          type: string
+          enum: [equivalent, related, dependency, derived]
+        explanation:
+          type: string
+    ErrorResponse:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+          additionalProperties: true

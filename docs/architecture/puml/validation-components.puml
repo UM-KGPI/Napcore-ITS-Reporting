@@ -1,0 +1,56 @@
+@startuml
+' Validation Service Components (Level 3/4)
+skinparam shadowing false
+skinparam componentStyle rectangle
+left to right direction
+
+skinparam component {
+  BackgroundColor #dbeafe
+  BorderColor #1e3a8a
+}
+skinparam database {
+  BackgroundColor #f3e8ff
+  BorderColor #6b21a8
+}
+
+component "Validation API\n(start/check/status)" as API
+component "Validation Orchestrator" as ORCH
+component "Rule Set Provider" as RULES
+component "RDF Parser Adapter" as PARSER
+component "SHACL Engine" as SHACL
+component "SPARQL Rule Engine" as SPARQL
+component "Quality Checks Engine\n(completeness, accuracy, consistency)" as QCHECK
+component "Non-Compliance Report Generator" as NCREP
+component "Findings Aggregator" as AGG
+component "Recommendation Builder" as RECO
+component "Event Publisher" as PUB
+
+database "RDF Metadata Store" as META
+database "Application DB" as APPDB
+queue "Event Bus" as BUS
+component "Versioned Rule Packs" as PACKS #fff3e0
+
+API --> ORCH
+ORCH --> RULES
+ORCH --> PARSER
+ORCH --> SHACL
+ORCH --> SPARQL
+ORCH --> QCHECK
+
+RULES --> PACKS
+PARSER --> META
+SHACL --> META
+SPARQL --> META
+QCHECK --> META
+
+SHACL --> AGG
+SPARQL --> AGG
+QCHECK --> AGG
+AGG --> NCREP
+AGG --> RECO
+NCREP --> APPDB
+AGG --> APPDB
+RECO --> APPDB
+ORCH --> PUB
+PUB --> BUS
+@enduml

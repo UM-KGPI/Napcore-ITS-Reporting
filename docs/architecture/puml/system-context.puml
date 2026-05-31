@@ -1,0 +1,32 @@
+@startuml
+' System Context (Level 1)
+skinparam shadowing false
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+left to right direction
+
+skinparam rectangle {
+  BackgroundColor #eef5ff
+  BorderColor #1f3a93
+}
+skinparam actor {
+  BackgroundColor #f7f7f7
+  BorderColor #333333
+}
+
+actor "Member state / NAP operator" as U
+
+rectangle "NAP ITS Reporter\n(Web Application)" as APP #d9f2e6
+rectangle "Federated Registry and Discoverability architecture for cross-NAP interoperability" as PATTERN #eef5ff
+
+rectangle "NAP Catalog and API Endpoints" as NAP #fff3e0
+rectangle "DG MOVE Templates\nand Reporting Requirements" as DGMOVE #fff3e0
+rectangle "mobilityDCAT-AP and RDF Standards\n(JSON-LD, TTL, RDF/XML)" as STD #fff3e0
+
+U --> APP : review, validate, report
+APP ..> PATTERN : implements
+
+APP --> NAP : interlink heterogeneous NAPs and discover endpoints/datasets/relations
+APP --> DGMOVE : apply templates and KPI mapping
+APP --> STD : apply validation semantics
+@enduml

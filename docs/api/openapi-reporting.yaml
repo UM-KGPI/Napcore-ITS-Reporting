@@ -1,0 +1,161 @@
+openapi: 3.1.0
+info:
+  title: Reporting Service API
+  version: 0.1.0
+  description: API contract for guided and automated report generation.
+servers:
+  - url: https://pilot.example.eu/reporting
+paths:
+  /reports:
+    post:
+      summary: Start report generation
+      operationId: startReportGeneration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartReportRequest'
+      responses:
+        '202':
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportAccepted'
+  /reports/{reportId}:
+    get:
+      summary: Get report status and summary
+      operationId: getReportSummary
+      parameters:
+        - name: reportId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Report summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportSummary'
+  /reports/{reportId}/exports:
+    get:
+      summary: List available exports for report
+      operationId: listReportExports
+      parameters:
+        - name: reportId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Export list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reportId:
+                    type: string
+                  exports:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ReportExport'
+  /reports/{reportId}/workflow:
+    get:
+      summary: Get guided workflow state
+      operationId: getReportWorkflowState
+      parameters:
+        - name: reportId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Workflow state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowState'
+components:
+  schemas:
+    StartReportRequest:
+      type: object
+      required: [period, scope, mode]
+      properties:
+        period:
+          type: string
+          example: 2026-Q2
+        scope:
+          type: string
+          enum: [national, regional, operator]
+        mode:
+          type: string
+          enum: [guided, semi-auto, auto]
+        includeRecommendations:
+          type: boolean
+          default: true
+    ReportAccepted:
+      type: object
+      required: [reportId, status, submittedAt]
+      properties:
+        reportId:
+          type: string
+        status:
+          type: string
+          enum: [accepted]
+        submittedAt:
+          type: string
+          format: date-time
+    ReportSummary:
+      type: object
+      required: [reportId, status, generatedAt]
+      properties:
+        reportId:
+          type: string
+        status:
+          type: string
+          enum: [accepted, running, completed, failed]
+        generatedAt:
+          type: string
+          format: date-time
+          nullable: true
+        qualityGate:
+          type: object
+          properties:
+            passed:
+              type: boolean
+            warnings:
+              type: integer
+            errors:
+              type: integer
+    ReportExport:
+      type: object
+      required: [format, uri]
+      properties:
+        format:
+          type: string
+          enum: [pdf, html, json]
+        uri:
+          type: string
+          format: uri
+        sizeBytes:
+          type: integer
+    WorkflowState:
+      type: object
+      required: [reportId, currentStep, completedSteps]
+      properties:
+        reportId:
+          type: string
+        currentStep:
+          type: string
+        completedSteps:
+          type: array
+          items:
+            type: string
+        nextAction:
+          type: string
