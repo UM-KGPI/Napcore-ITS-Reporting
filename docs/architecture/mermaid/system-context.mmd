@@ -9,13 +9,11 @@ flowchart LR
     PATTERN["Federated Registry and Discoverability architecture for cross-NAP interoperability"]:::system
 
     NAP[NAP catalog and API endpoints]:::ext
-    INFRA[Infrastructure services\nregistry, storage, messaging]:::ext
     DGMOVE[DG MOVE templates and reporting requirements]:::ext
     STD[mobilityDCAT-AP and RDF standards\nJSON-LD, TTL, RDF/XML]:::ext
 
     U -->|review, validate, report| APP
     APP -.implements.-> PATTERN
     APP -->|interlink heterogeneous NAPs and discover endpoints, datasets, and relations| NAP
-    APP -->|interoperable integrations| INFRA
     APP -->|apply reporting templates and KPI mappings| DGMOVE
     APP -->|apply validation rules and semantics| STD
