@@ -16,18 +16,22 @@ sequenceDiagram
     API->>ORCH: getDatasetHealth(datasetId, refresh?)
     ORCH->>CACHE: readLatestHealth(datasetId)
     CACHE-->>ORCH: cached status + evidence
-    ORCH->>RES: resolveDataset(datasetId)
-    RES-->>ORCH: mobilityDCAT-AP dataset record
-    ORCH->>URL: extractEndpoint(dataset record)
-    URL-->>ORCH: accessUrl, downloadUrl
-    ORCH->>PROBE: probe(endpoint)
-    PROBE->>NAP: HEAD/GET dataset endpoint
-    NAP-->>PROBE: HTTP status + latency
-    PROBE-->>ORCH: probe result
-    ORCH->>TRUST: evaluate(metadata, probe, freshness)
-    TRUST-->>ORCH: readinessStatus + trustLevel
-    ORCH->>CACHE: persist latest health evidence
-    ORCH->>DB: persist latest health evidence
-    ORCH-->>API: dataset health status
+    alt cache hit and fresh enough
+        ORCH-->>API: cached readinessStatus
+    else refresh requested or cache stale
+        ORCH->>RES: resolveDataset(datasetId)
+        RES-->>ORCH: mobilityDCAT-AP dataset record
+        ORCH->>URL: extractEndpoint(dataset record)
+        URL-->>ORCH: accessUrl, downloadUrl
+        ORCH->>PROBE: probe(endpoint)
+        PROBE->>NAP: HEAD/GET dataset endpoint
+        NAP-->>PROBE: HTTP status + latency
+        PROBE-->>ORCH: probe result
+        ORCH->>TRUST: evaluate(metadata, probe, freshness)
+        TRUST-->>ORCH: readinessStatus + trustLevel
+        ORCH->>CACHE: persist latest health evidence
+        ORCH->>DB: persist audit trail and evidence
+        ORCH-->>API: dataset health status
+    end
     API-->>FAPI: 200 OK
     FAPI-->>UI: readinessStatus, checkedAt, evidence
