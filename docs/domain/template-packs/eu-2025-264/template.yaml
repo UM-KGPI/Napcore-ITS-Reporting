@@ -1,0 +1,534 @@
+# Template pack: ITS Directive Article 17 Implementation Report
+#
+# Machine-readable transcription of Annex I (template) and Annex II (KPI
+# obligations) of Commission Implementing Decision (EU) 2025/264.
+# Wording of titles, prompts, data types and geographical scopes is copied
+# verbatim from the Official Journal text, including its spelling
+# ("reversable lanes", "traffic circulations plans").
+# Identifiers (id, scope ids) are ours and must stay stable across versions.
+#
+# Source: http://data.europa.eu/eli/dec_impl/2025/264/oj
+# Transcribed: 2026-10-23 from the Publications Office (Cellar) rendition.
+# See docs/domain/report-data-model.md for the model this file instantiates.
+
+pack:
+  id: eu-2025-264
+  version: 1.0.0
+  legalSource:
+    title: Commission Implementing Decision (EU) 2025/264 of 11 November 2024
+    eli: http://data.europa.eu/eli/dec_impl/2025/264/oj
+    basis: Article 17 of Directive 2010/40/EU
+  appliesToCycles: [2025, 2028, 2031]
+  reportTitle: "Directive 2010/40/EU Implementation Report {cycleYear}"
+  coverFields: [countryName, date]
+
+# Geographical scopes used by Annex I tables (2.5, 2.6).
+scopes:
+  ten-t-core:
+    label: The trans-European core network for roads
+  ten-t-comprehensive:
+    label: The comprehensive trans-European network for roads
+  ten-t-core-comprehensive:
+    label: The trans-European core and comprehensive network for roads
+  ten-t-comprehensive-plus:
+    label: >-
+      The comprehensive trans-European network for roads, other motorways and
+      sections of primary roads, where the total annual average daily traffic
+      is more than 8 500 vehicles, and all roads in the cities at the centre of
+      each Urban Node (if applicable limited to > 7 000 vehicles/day)
+  ten-t-core-comprehensive-plus:
+    label: >-
+      The core and comprehensive trans-European network for roads, other
+      motorways and sections of primary roads, where the total annual average
+      daily traffic is more than 8 500 vehicles, and all roads in the cities at
+      the centre of each Urban Node (if applicable limited to > 7 000
+      vehicles/day)
+  ten-t-core-comprehensive-other-motorways:
+    label: >-
+      The core and comprehensive trans-European network for roads and other
+      motorways not included in that network
+  urban-node-cities:
+    label: Road infrastructure in the cities at the centre of each Urban Node
+  urban-nodes-1315-2013:
+    label: >-
+      Urban nodes as defined in Article 3, point (p), of Regulation (EU) No
+      1315/2013 and listed in that Regulation, including those administered by
+      the cities
+  union-transport-network:
+    label: The entire transport network of the Union
+
+# Geographical scopes used by Annex II (KPI obligations).
+kpiScopes:
+  tier1-road:
+    label: Core, extended and comprehensive TEN-T (without urban nodes) + motorways
+  tier2-road:
+    label: Urban nodes from TEN-T + primary roads
+  tier3-road:
+    label: Entire road network
+  tier2-multimodal:
+    label: Urban nodes from TEN-T + transport nodes + primary roads
+  tier3-multimodal:
+    label: Entire transport network
+  benefit:
+    label: Core, extended and comprehensive TEN-T + motorways
+
+# Calculation principles printed above the 2.5 tables.
+measures:
+  static-length:
+    marker: "*"
+    text: >-
+      For static information: based on length divided by total length in
+      kilometres. The total length is the length of the network on which
+      underlying information exists, e.g. speed limits apply (almost)
+      everywhere, but access conditions for tunnels apply only to (the length
+      of) tunnel sections.
+  dynamic-capability-length:
+    marker: "**"
+    text: >-
+      For dynamic/temporary information: availability of data refers to the
+      ability to make the data available and accessible in a machine-readable
+      format on a certain percentage of the network, whenever the underlying
+      information exists / appears, based on the length of the network with
+      this capability divided by total length in kilometres.
+  parking-places:
+    text: "% of parking places for which data are available"
+  nodes-per-mode:
+    marker: "***"
+    text: >-
+      Where possible, provide figures per scheduled transport mode, referred to
+      in the Annex to Delegated Regulation (EU) 2017/1926 (such as air, rail
+      including high-speed rail, conventional rail, light rail, cableways,
+      long-distance coach, maritime including ferry, inland waterways, metro,
+      tram, bus, trolley-bus)
+  scope-covered:
+    text: "% geographical scope covered"
+
+# Section kinds:
+#   narrative  - free text answering the listed prompts
+#   table      - rows of {dataType, scope} with a percentage and comments
+#   kpi        - references KPI definitions below
+sections:
+  - id: "1"
+    title: Introduction
+    children:
+      - id: "1.1"
+        title: General overview of the national activities and projects
+        kind: narrative
+        prompts:
+          - id: overview
+            text: Including national Intelligent Transport Services ('ITS') legislation or strategies, or both
+      - id: "1.2"
+        title: General progress since [year of previous report]
+        kind: narrative
+        prompts:
+          - id: progress
+            text: "Summary of progress since previous report:"
+      - id: "1.3"
+        title: Contact information
+        kind: narrative
+        prompts:
+          - id: contact
+            text: Contact information
+
+  - id: "2"
+    title: Main projects, activities and initiatives
+    children:
+      - id: "2.1"
+        title: Priority area I. Information and mobility ITS services
+        children:
+          - id: "2.1.1"
+            title: Description of the main national activities and projects
+            kind: narrative
+            prompts: &activities
+              - id: activities
+                text: "Description of the relevant initiatives, their objective, timescale, milestones, resources, lead stakeholder(s) and status:"
+          - id: "2.1.2"
+            title: Progress since [year of previous report]
+            kind: narrative
+            prompts: &progress
+              - id: progress
+                text: "Description of progress in the area since [year of previous report]:"
+          - id: "2.1.3"
+            title: >-
+              Delegated Regulation (EU) 2017/1926 on the provision of EU-wide
+              multimodal travel information services (priority action a)
+            kind: narrative
+            legislation: [mmtis]
+            prompts:
+              - id: accessibility
+                text: "Progress made in terms of the accessibility, exchange and reuse of the travel and traffic data types set out in the Annex:"
+              - id: scope-quality
+                text: "Geographical scope of the data set out in the Annex accessible via the national access point, and their quality, including the criteria used to define this quality and the means used to monitor it:"
+              - id: linking
+                text: "Linking of travel information services:"
+              - id: compliance
+                text: "Results of the assessment of compliance referred to in Article 9:"
+              - id: nap-changes
+                text: "Where relevant, a description of changes to the national or common access point:"
+              - id: additional
+                text: "Additional information (e.g. have mobilityDCAT-AP or other metadata catalogues been implemented?):"
+          - id: "2.1.4"
+            title: >-
+              Reporting obligation under Delegated Regulation (EU) 2022/670 on
+              the provision of EU-wide real-time traffic information services
+              (priority action b)
+            kind: narrative
+            legislation: [rtti]
+            prompts:
+              - id: accessibility
+                text: "Progress made in terms of the accessibility, exchange and reuse of the data types set out in the Annex:"
+              - id: scope-quality
+                text: "Geographical scope of the data accessible via the National Access Point, changes to the primary road network and to the data content of real-time traffic information services and their quality, including the criteria used to define this quality and the means used to monitor it:"
+              - id: compliance
+                text: "Results of the assessment of compliance referred to in Article 12 with the requirements set out in Articles 3 to 11:"
+              - id: nap-changes
+                text: "Where relevant, a description of changes to the national or common access point:"
+              - id: additional
+                text: "Additional information (e.g. what data types are being provided? Have mobilityDCAT-AP or other metadata catalogues been implemented? Are quality requirements being checked?):"
+      - id: "2.2"
+        title: Priority area II. Travel, transport and traffic management ITS services
+        children:
+          - id: "2.2.1"
+            title: Description of the main national activities and projects
+            kind: narrative
+            prompts: *activities
+          - id: "2.2.2"
+            title: Progress since [year of previous report]
+            kind: narrative
+            prompts: *progress
+      - id: "2.3"
+        title: Priority area III. Road safety and security ITS services
+        children:
+          - id: "2.3.1"
+            title: Description of the main national activities and projects
+            kind: narrative
+            prompts: *activities
+          - id: "2.3.2"
+            title: Progress since [year of previous report]
+            kind: narrative
+            prompts: *progress
+          - id: "2.3.3"
+            title: 112 eCall (priority action d – Delegated Regulation (EU) No 305/2013)
+            kind: narrative
+            legislation: [ecall]
+            prompts:
+              - id: psap-changes
+                text: "Information on any changes regarding the national eCall PSAPs infrastructure and the authorities that are competent for assessing the conformity of the operations of the eCall PSAPs:"
+              - id: additional
+                text: "Additional information:"
+          - id: "2.3.4"
+            title: >-
+              Reporting obligation under Delegated Regulation (EU) No 886/2013
+              on data and procedures for the provision, where possible, of road
+              safety-related minimum universal traffic information free of
+              charge to users (priority action c)
+            kind: narrative
+            legislation: [srti]
+            prompts:
+              - id: progress-quality
+                text: "Progress made in implementing the information service, including the criteria used to define its level of quality and the means used to monitor its quality:"
+              - id: compliance
+                text: "Results of the assessment of compliance with the requirements set out in Articles 3 to 8 of Delegated Regulation (EU) No 886/2013:"
+              - id: nap-changes
+                text: "Where relevant, a description of changes to the national access point:"
+              - id: additional
+                text: "Additional information (e.g. sources of data used for the provision of safety-related traffic information):"
+          - id: "2.3.5"
+            title: >-
+              Reporting obligation under Delegated Regulation (EU) No 885/2013
+              on the provision of information services for safe and secure
+              parking places for trucks and commercial vehicles (priority
+              action e)
+            kind: narrative
+            legislation: [sstp]
+            prompts:
+              - id: places-and-spaces
+                text: "Number of different parking places and parking spaces on their territory:"
+                valueType: count-pair   # parking places, parking spaces
+              - id: registered-share
+                text: "Percentage of parking places registered in the information service:"
+                valueType: percent
+              - id: dynamic-share
+                text: "Percentage of parking places providing dynamic information on the availability of parking spaces and the priority zones:"
+                valueType: percent
+              - id: additional
+                text: "Additional information: (e.g. has a national access point been set up to provide truck parking data? Does this include dynamic data? What is the source of data (public / private)? Are the data published on the European Access Point for Truck Parking hosted by DG MOVE? If not, is there any intention to do so in future?)"
+      - id: "2.4"
+        title: Priority area IV. ITS services for cooperative, connected and automated mobility
+        children:
+          - id: "2.4.1"
+            title: Description of the main national activities and projects
+            kind: narrative
+            prompts:
+              - id: activities
+                text: "Description of the relevant initiatives, their objective, timescale, milestones, resources, lead stakeholder(s) and status: in particular, provide information on the C-ITS deployment initiatives and their technical specifications."
+          - id: "2.4.2"
+            title: Progress since [year of previous report]
+            kind: narrative
+            prompts: *progress
+      - id: "2.5"
+        title: Availability and accessibility via NAPs of data types listed in Annex III to Directive 2010/40/EU
+        children:
+          - id: "2.5.1"
+            title: Data relating to the provision of EU-wide road traffic information and navigation services
+            kind: table
+            valueColumn: "% of geographical scope where data type is available"
+            rows:
+              # 1.1 Static and dynamic traffic regulations
+              - { id: tunnels-core, category: "1.1", dataType: access conditions for tunnels, scope: ten-t-core, measure: static-length, note: "if more relevant, possibility to provide the number and % of tunnels" }
+              - { id: bridges-core, category: "1.1", dataType: access conditions for bridges, scope: ten-t-core, measure: static-length, note: "if more relevant, possibility to provide the number and % of bridges" }
+              - { id: speed-limits-core, category: "1.1", dataType: speed limits, scope: ten-t-core, measure: static-length }
+              - { id: hgv-overtaking-core, category: "1.1", dataType: overtaking bans on heavy goods vehicles, scope: ten-t-core, measure: static-length }
+              - { id: weight-size-core, category: "1.1", dataType: weight/length/width/height restrictions, scope: ten-t-core, measure: static-length }
+              - { id: tunnels-comprehensive, category: "1.1", dataType: access conditions for tunnels, scope: ten-t-comprehensive-plus, measure: static-length }
+              - { id: bridges-comprehensive, category: "1.1", dataType: access conditions for bridges, scope: ten-t-comprehensive-plus, measure: static-length }
+              - { id: speed-limits-comprehensive, category: "1.1", dataType: speed limits, scope: ten-t-comprehensive-plus, measure: static-length }
+              - { id: hgv-overtaking-comprehensive, category: "1.1", dataType: overtaking bans on heavy goods vehicles, scope: ten-t-comprehensive-plus, measure: static-length }
+              - { id: weight-size-comprehensive, category: "1.1", dataType: weight/length/width/height restrictions, scope: ten-t-comprehensive-plus, measure: static-length }
+              - { id: one-way-streets, category: "1.1", dataType: one-way streets, scope: urban-node-cities, measure: static-length, note: "if relevant, possibility to also provide in addition the number and % of cities able to supply such data" }
+              - { id: freight-delivery, category: "1.1", dataType: freight delivery regulations, scope: urban-node-cities, measure: static-length, note: "if relevant, possibility to also provide in addition the number and % of cities able to supply such data" }
+              - { id: reversible-lanes, category: "1.1", dataType: direction of travel on reversable lanes, scope: ten-t-core-comprehensive-plus, measure: static-length }
+              - { id: circulation-plans, category: "1.1", dataType: traffic circulations plans, scope: ten-t-core-comprehensive-plus, measure: static-length, note: "if the network length is impossible to calculate, possibility to provide the number and % of traffic circulation plans" }
+              - { id: permanent-restrictions, category: "1.1", dataType: permanent access restrictions, scope: ten-t-core-comprehensive-plus, measure: static-length }
+              - { id: regulated-zones, category: "1.1", dataType: "boundaries of restrictions, prohibitions or obligations with zonal validity, current access status and conditions for circulation in regulated traffic zones", scope: ten-t-core-comprehensive-plus, measure: static-length, note: "if the network length is impossible to calculate, possibility to provide the number and % of boundaries of restrictions, prohibitions, etc." }
+              # 1.2 Types of data on the state of the network
+              - { id: road-closures-core, category: "1.2", dataType: road closures, scope: ten-t-core, measure: dynamic-capability-length }
+              - { id: lane-closures-core, category: "1.2", dataType: lane closures, scope: ten-t-core, measure: dynamic-capability-length }
+              - { id: roadworks-core, category: "1.2", dataType: roadworks, scope: ten-t-core, measure: dynamic-capability-length }
+              - { id: road-closures-comprehensive, category: "1.2", dataType: road closures, scope: ten-t-comprehensive, measure: dynamic-capability-length }
+              - { id: lane-closures-comprehensive, category: "1.2", dataType: lane closures, scope: ten-t-comprehensive, measure: dynamic-capability-length }
+              - { id: roadworks-comprehensive, category: "1.2", dataType: roadworks, scope: ten-t-comprehensive, measure: dynamic-capability-length }
+              - { id: temporary-traffic-management, category: "1.2", dataType: temporary traffic management measures, scope: ten-t-core-comprehensive, measure: dynamic-capability-length }
+          - id: "2.5.2"
+            title: Data relating to information and reservation services for safe and secure parking places for trucks and commercial vehicles
+            kind: table
+            valueColumn: "% of parking places for which data are available"
+            rows:
+              - { id: parking-static-core, category: static data, dataType: static data related to the parking areas, scope: ten-t-core, measure: parking-places }
+              - { id: parking-safety-core, category: static data, dataType: information on safety and equipment of the parking area, scope: ten-t-core, measure: parking-places }
+              - { id: parking-static-comprehensive, category: static data, dataType: static data related to the parking areas, scope: ten-t-comprehensive, measure: parking-places }
+              - { id: parking-safety-comprehensive, category: static data, dataType: information on safety and equipment of the parking area, scope: ten-t-comprehensive, measure: parking-places }
+              - { id: parking-dynamic, category: dynamic data, dataType: "dynamic data on availability of parking places including whether a parking is: full, closed or number of free places which are available.", scope: ten-t-core-comprehensive, measure: parking-places }
+          - id: "2.5.3"
+            title: Data on detected road safety-related events or conditions relating to road safety-related minimum universal traffic information
+            kind: table
+            valueColumn: "% of geographical scope where data type is available"
+            rows:
+              - { id: slippery-road, category: dynamic data, dataType: temporary slippery road, scope: ten-t-core-comprehensive-other-motorways, measure: dynamic-capability-length }
+              - { id: obstacles, category: dynamic data, dataType: "animal, people, obstacles, debris on the road", scope: ten-t-core-comprehensive-other-motorways, measure: dynamic-capability-length }
+              - { id: accident-area, category: dynamic data, dataType: unprotected accident area, scope: ten-t-core-comprehensive-other-motorways, measure: dynamic-capability-length }
+              - { id: short-term-roadworks, category: dynamic data, dataType: short-term road works, scope: ten-t-core-comprehensive-other-motorways, measure: dynamic-capability-length }
+              - { id: wrong-way-driver, category: dynamic data, dataType: wrong-way driver, scope: ten-t-core-comprehensive-other-motorways, measure: dynamic-capability-length }
+              - { id: unmanaged-blockage, category: dynamic data, dataType: unmanaged blockage of a road, scope: ten-t-core-comprehensive-other-motorways, measure: dynamic-capability-length }
+              - { id: reduced-visibility, category: dynamic data, dataType: reduced visibility, scope: ten-t-core-comprehensive-other-motorways, measure: dynamic-capability-length }
+              - { id: exceptional-weather, category: dynamic data, dataType: exceptional weather conditions, scope: ten-t-core-comprehensive-other-motorways, measure: dynamic-capability-length }
+          - id: "2.5.4"
+            title: Static multimodal traffic data for EU-wide multimodal travel information services
+            kind: table
+            valueColumn: "% of nodes where data are available for the scheduled transport mode"
+            breakdown: scheduledTransportMode   # optional, see measures.nodes-per-mode
+            rows:
+              - { id: access-nodes-urban, category: static data, dataType: "Location of identified access nodes for all scheduled modes, including information on accessibility of access nodes and paths within an interchange (such as existence of lifts, escalators)", scope: urban-nodes-1315-2013, measure: nodes-per-mode }
+              - { id: access-nodes-union, category: static data, dataType: "Location of identified access nodes for all scheduled modes, including information on accessibility of access nodes and paths within an interchange (such as existence of lifts, escalators)", scope: union-transport-network, measure: nodes-per-mode }
+      - id: "2.6"
+        title: Availability of services listed in Annex IV to Directive 2010/40/EU
+        children:
+          - id: "2.6.1"
+            title: Road safety-related minimum universal traffic information services
+            kind: table
+            valueColumn: "% geographical scope covered"
+            rows:
+              - { id: srti-service, dataType: Road safety-related minimum universal traffic information (SRTI) service, scope: ten-t-core-comprehensive, measure: scope-covered }
+      - id: "2.7"
+        title: Other initiatives / highlights
+        children:
+          - id: "2.7.1"
+            title: "Description of other national initiatives / highlights and projects not covered in priority areas 1 to 4:"
+            kind: narrative
+            prompts: *activities
+          - id: "2.7.2"
+            title: Progress since [year of previous report]
+            kind: narrative
+            prompts: *progress
+
+  - id: "3"
+    title: Key Performance Indicators (KPIs)
+    note: KPIs will be reported separately by type of road network / transport network and nodes (where appropriate).
+    children:
+      - { id: "3.1", title: Deployment KPIs, kind: kpi, kpis: [deploy-info-gathering, deploy-incident-detection, deploy-traffic-management, deploy-c-its, deploy-rtti, deploy-dynamic-travel-info, deploy-freight-info] }
+      - { id: "3.2", title: Benefit KPIs, kind: kpi, kpis: [benefit-travel-time, benefit-crashes, benefit-co2] }
+      - { id: "3.3", title: Financial KPIs, kind: kpi, note: ITS includes any types of systems and services together., kpis: [fin-investment, fin-operating-costs] }
+
+# Annex II obligation tiers. Each entry: scope -> obligation per cycle.
+# "Mandatory in 2028 (voluntary before)" is encoded as voluntary for 2025 and
+# mandatory from 2028; see report-data-model.md (assumption A2) for 2031+.
+obligationTiers:
+  road: &roadTiers
+    - { scope: tier1-road, obligation: { 2025: mandatory, 2028: mandatory } }
+    - { scope: tier2-road, obligation: { 2025: voluntary, 2028: mandatory } }
+    - { scope: tier3-road, obligation: { 2025: additional, 2028: additional } }
+  multimodal: &multimodalTiers
+    - { scope: tier1-road, obligation: { 2025: mandatory, 2028: mandatory } }
+    - { scope: tier2-multimodal, obligation: { 2025: voluntary, 2028: mandatory } }
+    - { scope: tier3-multimodal, obligation: { 2025: additional, 2028: additional } }
+  benefit: &benefitTiers
+    - { scope: benefit, obligation: { 2025: voluntary, 2028: mandatory } }
+
+kpis:
+  # 3.1 Deployment KPIs: KPI = covered km / total km of same network type x 100
+  - id: deploy-info-gathering
+    section: "3.1.1"
+    name: Information-gathering infrastructures / equipment (road KPI)
+    group: deployment
+    breakdown: [networkType, serviceType, equipment]   # equipment: fixed | mobile, where relevant
+    inputs:
+      - { id: coveredKm, unit: km, text: Length of road network type / road sections (in km) equipped with information-gathering infrastructures }
+      - { id: totalKm, unit: km, text: total length of this same road network type (in km) }
+    formula: coveredKm / totalKm * 100
+    unit: percent
+    tiers: *roadTiers
+  - id: deploy-incident-detection
+    section: "3.1.2"
+    name: Incident detection (road KPI)
+    group: deployment
+    breakdown: [networkType]
+    inputs:
+      - { id: coveredKm, unit: km, text: Length of road network type / road sections (in km) equipped with ITS to detect incident }
+      - { id: totalKm, unit: km, text: total length of this same road network type (in km) }
+    formula: coveredKm / totalKm * 100
+    unit: percent
+    tiers: *roadTiers
+  - id: deploy-traffic-management
+    section: "3.1.3"
+    name: Traffic management and traffic control measures (road KPI)
+    group: deployment
+    breakdown: [networkType]
+    inputs:
+      - { id: coveredKm, unit: km, text: Length of road network type / road sections (in km) covered by traffic management and traffic control measures }
+      - { id: totalKm, unit: km, text: total length of this same road network type (in km) }
+    formula: coveredKm / totalKm * 100
+    unit: percent
+    tiers: *roadTiers
+  - id: deploy-c-its
+    section: "3.1.4"
+    name: Cooperative-ITS services and applications (road KPI)
+    group: deployment
+    breakdown: [networkType]
+    inputs:
+      - { id: coveredKm, unit: km, text: Length of road network type / road sections (in km) covered by C-ITS services or applications }
+      - { id: totalKm, unit: km, text: total length of this same road network type (in km) }
+    formula: coveredKm / totalKm * 100
+    unit: percent
+    tiers: *roadTiers
+  - id: deploy-rtti
+    section: "3.1.5"
+    name: Real-time traffic information (road KPI)
+    group: deployment
+    breakdown: [networkType]
+    inputs:
+      - { id: coveredKm, unit: km, text: Length of road network type / road sections (in km) with provision of real-time traffic information services }
+      - { id: totalKm, unit: km, text: total length of this same road network type (in km) }
+    formula: coveredKm / totalKm * 100
+    unit: percent
+    tiers: *roadTiers
+  - id: deploy-dynamic-travel-info
+    section: "3.1.6"
+    name: Dynamic travel information (multimodal KPI)
+    group: deployment
+    breakdown: [networkType, nodeType]
+    optional: [reducedMobilityShare]   # "if relevant, indicate the proportion of services accessible to passengers with reduced mobility, orientation and/or communication"
+    variants:
+      - id: network
+        inputs:
+          - { id: coveredKm, unit: km, text: Length of transport network type (in km) with provision of dynamic travel information services }
+          - { id: totalKm, unit: km, text: total length of this same transport network type (in km) }
+        formula: coveredKm / totalKm * 100
+      - id: nodes
+        inputs:
+          - { id: coveredNodes, unit: count, text: Number of transport nodes (e.g. rail or bus stations) covered by dynamic travel information services }
+          - { id: totalNodes, unit: count, text: total number of the same transport nodes }
+        formula: coveredNodes / totalNodes * 100
+    unit: percent
+    tiers: *multimodalTiers
+  - id: deploy-freight-info
+    section: "3.1.7"
+    name: Freight information (multimodal if possible or road KPI)
+    group: deployment
+    breakdown: [networkType, nodeType]
+    optional: [reducedMobilityShare]
+    variants:
+      - id: network
+        inputs:
+          - { id: coveredKm, unit: km, text: Length of road network type / road sections (in km) with provision of freight information services }
+          - { id: totalKm, unit: km, text: total length of this same road network type (in km) }
+        formula: coveredKm / totalKm * 100
+      - id: nodes
+        inputs:
+          - { id: coveredNodes, unit: count, text: Number of freight nodes (e.g. ports, logistics platforms) covered by freight information services }
+          - { id: totalNodes, unit: count, text: total number of the same freight nodes }
+        formula: coveredNodes / totalNodes * 100
+    unit: percent
+    tiers: *multimodalTiers
+
+  # 3.2 Benefit KPIs
+  - id: benefit-travel-time
+    section: "3.2.1"
+    name: Change in travel time (road KPI)
+    group: benefit
+    inputs:
+      - { id: before, unit: time, text: travel time before ITS implementation or improvement }
+      - { id: after, unit: time, text: travel time after ITS implementation or improvement }
+      - { id: vehicleKm, unit: vehicle.km, text: vehicle.km for the route / area considered }
+    formula: (before - after) / before * 100
+    unit: percent
+    tiers: *benefitTiers
+  - id: benefit-crashes
+    section: "3.2.2"
+    name: Change in the number of road crashes resulting in deaths or injuries (road KPI)
+    group: benefit
+    breakdown: [severity]   # optional: deaths | serious injuries | slight injuries
+    inputs:
+      - { id: before, unit: count, text: Number of road crashes resulting in deaths or injuries before ITS implementation or improvement }
+      - { id: after, unit: count, text: Number of road crashes resulting in deaths or injuries after ITS implementation or improvement }
+      - { id: vehicleKm, unit: vehicle.km, text: vehicle.km for the route / area considered }
+    formula: null   # Annex I gives inputs only, no formula
+    unit: count
+    tiers: *benefitTiers
+  - id: benefit-co2
+    section: "3.2.3"
+    name: Change in traffic-CO2 emissions (road KPI)
+    annexIIName: Changes in traffic-CO2 emissions (road KPI)
+    group: benefit
+    requires: [routesOrAreas]   # "Please specify routes / areas where ITS has been implemented or improved"
+    inputs:
+      - { id: before, unit: tCO2, text: traffic-CO2 emissions before ITS implementation or improvement }
+      - { id: after, unit: tCO2, text: traffic-CO2 emissions after implementation or improvement }
+    formula: (before - after) / before * 100
+    unit: percent
+    tiers: *benefitTiers
+
+  # 3.3 Financial KPIs ("public" = public administrations or publicly-owned entities)
+  # The source marks "public*" with a footnote; the marker is omitted from the names.
+  - id: fin-investment
+    section: "3.3"
+    name: Annual public investment in road ITS (as % of total transport infrastructure investments)
+    annexIIName: Annual public investment in road ITS (+ figures for private investments where possible)
+    group: financial
+    optional: [privateFigures]
+    unit: percent
+    tiers: *roadTiers
+  - id: fin-operating-costs
+    section: "3.3"
+    name: Annual public operating and maintenance costs of road ITS (in euro per kilometre of network covered)
+    annexIIName: Annual public operating and maintenance costs of road ITS (+ figures for private costs where possible)
+    group: financial
+    optional: [privateFigures]
+    unit: EUR/km
+    tiers: *roadTiers
+
+legislation:
+  mmtis:  { label: Delegated Regulation (EU) 2017/1926, priorityAction: a }
+  rtti:   { label: Delegated Regulation (EU) 2022/670, priorityAction: b }
+  srti:   { label: Delegated Regulation (EU) No 886/2013, priorityAction: c }
+  ecall:  { label: Delegated Regulation (EU) No 305/2013, priorityAction: d }
+  sstp:   { label: Delegated Regulation (EU) No 885/2013, priorityAction: e }

@@ -1,0 +1,138 @@
+# Metadata mapping: mobilityDCAT-AP 3.0.0 -> template pack eu-2025-264
+#
+# Says which harvested metadata can serve as EVIDENCE for a template field.
+# Metadata never produces the reported percentage on its own: Annex I asks
+# for network-length or node shares, which metadata does not carry. The
+# mapping produces a pre-filled suggestion plus the list of supporting
+# datasets; the Member State confirms or overrides it (see
+# report-data-model.md, "Provenance").
+#
+# Concept IRIs were checked on 2026-10-23 against
+#   https://w3id.org/mobilitydcat-ap/mobility-theme
+#   https://w3id.org/mobilitydcat-ap/network-coverage
+# Deprecated concepts are listed under `deprecated` so records still using
+# them (common in 1.x catalogues) keep matching.
+
+mapping:
+  id: eu-2025-264--mobilitydcat-ap-3.0.0
+  templatePack: eu-2025-264
+  profile: https://w3id.org/mobilitydcat-ap/releases/3.0.0
+
+prefixes:
+  theme: https://w3id.org/mobilitydcat-ap/mobility-theme/
+  coverage: https://w3id.org/mobilitydcat-ap/network-coverage/
+  eli: http://data.europa.eu/eli/
+
+# Dataset-level dcatap:applicableLegislation values per legal act.
+# MMTIS lists both the base act and its amendment: the mobility-theme
+# vocabulary tags MMTIS themes with 2024/490, Annex I cites 2017/1926.
+legislation:
+  mmtis: [eli:reg_del/2017/1926/oj, eli:reg_del/2024/490/oj]
+  rtti:  [eli:reg_del/2022/670/oj, eli:reg_del/2015/962/oj]
+  srti:  [eli:reg_del/2013/886/oj]
+  sstp:  [eli:reg_del/2013/885/oj]
+
+# Network-coverage concepts that suggest a scope. The vocabulary has a single
+# `ten-network` concept: it cannot distinguish core from comprehensive TEN-T,
+# and has no "primary roads" concept. Matches are therefore `coarse` at best.
+scopeHints:
+  ten-t-core:                               { coverage: [coverage:ten-network], fidelity: coarse }
+  ten-t-comprehensive:                      { coverage: [coverage:ten-network], fidelity: coarse }
+  ten-t-core-comprehensive:                 { coverage: [coverage:ten-network], fidelity: coarse }
+  ten-t-comprehensive-plus:                 { coverage: [coverage:ten-network, coverage:motorways, coverage:state-roads-or-federal-roads, coverage:urban-and-local-roads], fidelity: coarse }
+  ten-t-core-comprehensive-plus:            { coverage: [coverage:ten-network, coverage:motorways, coverage:state-roads-or-federal-roads, coverage:urban-and-local-roads], fidelity: coarse }
+  ten-t-core-comprehensive-other-motorways: { coverage: [coverage:ten-network, coverage:motorways], fidelity: coarse }
+  urban-node-cities:                        { coverage: [coverage:urban-and-local-roads], fidelity: coarse }
+  urban-nodes-1315-2013:                    { coverage: [], fidelity: none }
+  union-transport-network:                  { coverage: [], fidelity: none }
+
+# Table rows (2.5.x, 2.6.1). A dataset is evidence for a row when it has
+# (any themes) AND (legislation matches, or no legislation is stated) AND
+# (scope hint matches, or networkCoverage is absent -> flagged "scope unknown").
+# fidelity: exact = concept names the data type; partial = broader concept;
+#           none = no concept exists, only legislation can be used.
+rows:
+  "2.5.1":
+    tunnels-core:                 &tunnels { legislation: rtti, themes: [theme:tunnel-access-conditions, theme:tunnel-closures-and-access-conditions], fidelity: exact }
+    tunnels-comprehensive:        *tunnels
+    bridges-core:                 &bridges { legislation: rtti, themes: [theme:bridge-access-conditions, theme:bridge-closures-and-access-conditions], fidelity: exact }
+    bridges-comprehensive:        *bridges
+    speed-limits-core:            &speed { legislation: rtti, themes: [theme:speed-limits, theme:dynamic-speed-limits], fidelity: exact }
+    speed-limits-comprehensive:   *speed
+    hgv-overtaking-core:          &hgv { legislation: rtti, themes: [theme:static-overtaking-bans-on-heavy-goods-vehicles, theme:dynamic-overtaking-bans-on-heavy-goods-vehicles], fidelity: exact }
+    hgv-overtaking-comprehensive: *hgv
+    weight-size-core:             &weight { legislation: rtti, themes: [theme:weight-length-width-height-restrictions], fidelity: exact }
+    weight-size-comprehensive:    *weight
+    one-way-streets:              { legislation: rtti, themes: [theme:one-way-streets], fidelity: exact }
+    freight-delivery:             { legislation: rtti, themes: [theme:freight-delivery-regulations], fidelity: exact }
+    reversible-lanes:             { legislation: rtti, themes: [theme:direction-of-travel-on-reversible-lanes], fidelity: exact }
+    circulation-plans:            { legislation: rtti, themes: [theme:traffic-circulation-plans], fidelity: exact }
+    permanent-restrictions:       { legislation: rtti, themes: [theme:permanent-access-restrictions], fidelity: exact }
+    regulated-zones:              { legislation: rtti, themes: [theme:regulated-traffic-zones], fidelity: exact }
+    road-closures-core:           &roadClosures { legislation: rtti, themes: [theme:road-closures-and-access-conditions], fidelity: exact }
+    road-closures-comprehensive:  *roadClosures
+    lane-closures-core:           &laneClosures { legislation: rtti, themes: [theme:lane-closures-and-access-conditions], fidelity: exact }
+    lane-closures-comprehensive:  *laneClosures
+    roadworks-core:               &roadworks { legislation: rtti, themes: [theme:long-term-road-works, theme:short-term-road-works, theme:road-work-information], fidelity: exact }
+    roadworks-comprehensive:      *roadworks
+    temporary-traffic-management: { legislation: rtti, themes: [theme:other-temporary-traffic-management-measures-or-plans], fidelity: exact }
+  "2.5.2":
+    # Parking concepts are generic (cars, trucks, rest areas): legislation
+    # sstp is REQUIRED here to separate truck parking from car parking.
+    parking-static-core:          &parkingStatic { legislation: sstp, legislationRequired: true, themes: [theme:parking-locations-description-and-facilities, theme:service-and-rest-area-locations-description-and-facilities], deprecated: [theme:truck-parking-locations-and-conditions], fidelity: partial }
+    parking-static-comprehensive: *parkingStatic
+    parking-safety-core:          *parkingStatic
+    parking-safety-comprehensive: *parkingStatic
+    parking-dynamic:              { legislation: sstp, legislationRequired: true, themes: [theme:parking-real-time-availability, theme:service-and-rest-area-real-time-availability], deprecated: [theme:truck-parking-availability], fidelity: partial }
+  "2.5.3":
+    # Only some SRTI event types have their own concept.
+    slippery-road:        { legislation: srti, themes: [theme:poor-road-conditions], fidelity: partial }
+    obstacles:            { legislation: srti, themes: [theme:road-events-and-conditions], fidelity: partial }
+    accident-area:        { legislation: srti, themes: [theme:accidents-and-incidents], fidelity: partial }
+    short-term-roadworks: { legislation: srti, themes: [theme:short-term-road-works], fidelity: exact }
+    wrong-way-driver:     { legislation: srti, legislationRequired: true, themes: [theme:road-events-and-conditions], fidelity: none }
+    unmanaged-blockage:   { legislation: srti, legislationRequired: true, themes: [theme:road-events-and-conditions], fidelity: none }
+    reduced-visibility:   { legislation: srti, themes: [theme:road-weather-conditions], fidelity: partial }
+    exceptional-weather:  { legislation: srti, themes: [theme:road-weather-conditions], fidelity: partial }
+  "2.5.4":
+    # Per-mode breakdown comes from mobilitydcatap:transportMode.
+    access-nodes-urban: &nodes { legislation: mmtis, themes: [theme:facility-location-and-features, theme:accessibility-and-paths-within-facilities], deprecated: [theme:stop-facilities-location-and-features, theme:stop-facilities-accessibility-and-paths-within-facility, theme:locations-and-stations], breakdownProperty: mobilitydcatap:transportMode, fidelity: partial }
+    access-nodes-union: *nodes
+  "2.6.1":
+    srti-service: { legislation: srti, legislationRequired: true, themes: [], fidelity: none }
+
+# Narrative prompts with metadata-derived content. The derivation output is
+# inserted as a "facts" block next to the free-text answer, never as the answer.
+prompts:
+  "2.1.3":
+    additional:
+      derive: catalogue-profile    # dcat:CatalogRecord dct:conformsTo -> mobilityDCAT-AP version(s); latest validation result per profile
+    compliance:
+      derive: assessments          # dcat:Dataset mobilitydcatap:assessmentResult -> mobilitydcatap:Assessment (dct:issued, oa:hasBody), filtered by legislation mmtis
+    scope-quality:
+      derive: quality-annotations  # dcat:Dataset dqv:hasQualityAnnotation, filtered by legislation mmtis
+    nap-changes:
+      derive: catalogue-diff       # catalogue homepage / endpoints vs. the snapshot linked to the previous report
+    accessibility:
+      derive: dataset-inventory    # datasets by theme and mobilitydcatap:mobilityDataStandard (on dcat:Distribution), legislation mmtis
+  "2.1.4":
+    additional:
+      derive: [dataset-inventory, catalogue-profile, quality-annotations]
+    compliance:
+      derive: assessments          # legislation rtti
+    scope-quality:
+      derive: quality-annotations  # legislation rtti
+    nap-changes:
+      derive: catalogue-diff
+    accessibility:
+      derive: dataset-inventory    # legislation rtti
+  "2.3.4":
+    compliance:
+      derive: assessments          # legislation srti
+    nap-changes:
+      derive: catalogue-diff
+    additional:
+      derive: dataset-inventory    # publishers / rights holders as "sources of data", legislation srti
+  "2.3.5":
+    additional:
+      derive: dataset-inventory    # legislation sstp; answers "Does this include dynamic data?"

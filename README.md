@@ -2,7 +2,7 @@
 
 NAP ITS Reporter is a pilot web application for mobilityDCAT-AP metadata processing across National Access Points (NAPs).
 
-The application supports preparation of the ITS Implementation Report in line with the Delegated Regulation available at https://eur-lex.europa.eu/legal-content/EN/ALL/?uri=oj:L_202500264.
+The application supports preparation of the ITS Implementation Report (Article 17 of Directive 2010/40/EU) in line with Commission Implementing Decision (EU) 2025/264, which sets the report template and KPIs: https://eur-lex.europa.eu/legal-content/EN/ALL/?uri=oj:L_202500264.
 
 The architecture follows a Federated Registry and Discoverability approach for cross-NAP interoperability. It supports:
 
@@ -70,6 +70,12 @@ flowchart LR
 | [docs/architecture/c4-level4-validation.md](docs/architecture/c4-level4-validation.md) | [docs/architecture/svg/validation-components.svg](docs/architecture/svg/validation-components.svg) |
 | [docs/architecture/c4-level4-reporting.md](docs/architecture/c4-level4-reporting.md) | [docs/architecture/svg/reporting-components.svg](docs/architecture/svg/reporting-components.svg), [docs/architecture/svg/reporting-primary-runtime-flow-mermaid.svg](docs/architecture/svg/reporting-primary-runtime-flow-mermaid.svg) |
 | [docs/architecture/c4-level4-registry-discoverability.md](docs/architecture/c4-level4-registry-discoverability.md) | [docs/architecture/svg/registry-discoverability-module-view.svg](docs/architecture/svg/registry-discoverability-module-view.svg), [docs/architecture/svg/registry-discoverability-primary-runtime-flow.svg](docs/architecture/svg/registry-discoverability-primary-runtime-flow.svg) |
+
+## Domain Model and Decisions
+
+- Report data model (Implementing Decision (EU) 2025/264): [docs/domain/report-data-model.md](docs/domain/report-data-model.md)
+- Template pack and mobilityDCAT-AP 3.0.0 mapping: [docs/domain/template-packs/eu-2025-264](docs/domain/template-packs/eu-2025-264)
+- Architecture Decision Records: [docs/architecture/adr](docs/architecture/adr/README.md)
 
 ## API Contracts
 
