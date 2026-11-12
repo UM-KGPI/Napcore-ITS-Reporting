@@ -1,6 +1,6 @@
-# NAP ITS Reporter
+# NAPCORE ITS Reporting Tool
 
-NAP ITS Reporter is a pilot web application for mobilityDCAT-AP metadata processing across National Access Points (NAPs).
+NAPCORE ITS Reporting Tool is a pilot web application for mobilityDCAT-AP metadata processing across National Access Points (NAPs).
 
 The application supports preparation of the ITS Implementation Report (Article 17 of Directive 2010/40/EU) in line with Commission Implementing Decision (EU) 2025/264, which sets the report template and KPIs: https://eur-lex.europa.eu/legal-content/EN/ALL/?uri=oj:L_202500264.
 
@@ -31,7 +31,7 @@ flowchart LR
 
 	U[Member state / NAP operator]:::user
 
-	APP["NAP ITS Reporter\n(Web Application)"]:::app
+	APP["NAPCORE ITS Reporting Tool\n(Web Application)"]:::app
 	PATTERN["Federated Registry and Discoverability architecture for cross-NAP interoperability"]:::system
 
 	NAP[NAP catalog and API endpoints]:::ext
