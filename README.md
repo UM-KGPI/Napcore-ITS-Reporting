@@ -1,8 +1,25 @@
 # NAPCORE ITS Reporting Tool
 
-NAPCORE ITS Reporting Tool is a pilot web application for mobilityDCAT-AP metadata processing across National Access Points (NAPs).
+NAPCORE ITS Reporting Tool is a pilot web application intended to assist Member States in preparing the ITS implementation/progress report they must deliver to the European Comission, Directorate-General for Mobility and Transport (DG-MOVE) under Article 17 of Directive 2010/40/EU.
+The tool follows the Commission Implementing Decision (EU) 2025/264, which sets the report template and KPIs: https://eur-lex.europa.eu/legal-content/EN/ALL/?uri=oj:L_202500264.
+It is developed in NAPCORE Task 5.1 NAP Data Insights and Reporting Support and targets the upcoming 2028 reporting cycle.
 
-The application supports preparation of the ITS Implementation Report (Article 17 of Directive 2010/40/EU) in line with Commission Implementing Decision (EU) 2025/264, which sets the report template and KPIs: https://eur-lex.europa.eu/legal-content/EN/ALL/?uri=oj:L_202500264.
+## Objective
+
+Make reporting easier for Member States and more consistent and comparable, by:
+
+- guiding the reporting officer through the template question by question, with harmonised structure and best-practice guidance;
+- pre-filling answers and KPIs where data can be obtained automatically or semi-automatically (e.g., from NAP metadata catalogues in mobilityDCAT-AP);
+- supporting manual input and review where automation is not possible (narrative sections);
+- producing a draft report in the structure of the official template.
+
+## Scope
+
+- In scope: the full template (introduction, priority areas, KPIs).
+- Metadata discovery, ingestion and validation across NAPs is one data source for the tool, not its main purpose.
+- The Member State remains responsible for content and submission.
+
+## Architecture
 
 The architecture follows a Federated Registry and Discoverability approach for cross-NAP interoperability. It supports:
 
@@ -10,6 +27,15 @@ The architecture follows a Federated Registry and Discoverability approach for c
 - compliance validation against mobilityDCAT-AP and DG MOVE requirements,
 - KPI mapping and reporting workflows,
 - dataset health readiness evaluation based on dataset ID resolution and endpoint availability checks.
+
+## Status
+
+Project stages:
+1. Requirements specification 
+2. Design
+3. Development and testing.
+Current phase: Requirement specification.
+Architecture below is a working proposal.
 
 ## Architecture Overview (C4)
 
