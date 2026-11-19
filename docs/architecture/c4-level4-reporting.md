@@ -4,59 +4,82 @@ This document describes the internal (code-level) design of the microservice for
 
 ## Purpose
 
-- Manages a guided reporting workflow.
-- Maps metadata (mobilityDCAT-AP) elements to KPI and DG MOVE templates.
-- Supports partially or fully automated report generation.
-- Provides documentation-ready report outputs and exports.
+- Guides the Member State through the Annex I template of Implementing Decision (EU) 2025/264, section by section.
+- Collects narrative answers, and shows metadata-derived evidence and suggested values next to them. A person confirms every reported value; full-auto generation is not a goal (ADR-0001).
+- Checks completeness against the Annex II obligations and manages the report lifecycle: draft, in-review, approved, exported.
+- Renders the report in the Annex I structure and exports it as DOCX, PDF and JSON.
 
 ## Module View
+
+Components of the Reporting module, and the other modules and stores it uses. Aligned with ADR-0001, ADR-0002 and ADR-0003; ownership follows [report-data-model.md, section 6](../domain/report-data-model.md#6-ownership-by-c4-container).
+
+- PlantUML source: `docs/architecture/puml/reporting-components.puml`
+- SVG export: `docs/architecture/svg/reporting-components.svg`
 
 ```mermaid
 flowchart TB
     classDef mod fill:#2563eb,stroke:#1e3a8a,color:#fff
+    classDef other fill:#6b7280,stroke:#374151,color:#fff
     classDef data fill:#7c3aed,stroke:#4c1d95,color:#fff
     classDef ext fill:#d97706,stroke:#92400e,color:#fff
 
-    API[ReportingController]:::mod
-    AUTH[AuthorizationGuard]:::mod
-    ORCH[ReportingOrchestrator]:::mod
-    GUIDE[GuidedWorkflowEngine]:::mod
-    MAP[KpiMappingEngine]:::mod
-    DGMAP[DgMoveTemplateMapper]:::mod
-    TPL[TemplateProvider]:::mod
-    AUTO[AutomationModePlanner]:::mod
-    GEN[ReportGenerator]:::mod
-    QA[ReportQualityGate]:::mod
-    EXP[ExportManager]:::mod
-    PUB[EventPublisher]:::mod
+    API["Reporting API (/api/v1/reports/...)"]:::mod
 
-    APPDB[(Application DB)]:::data
-    DOCS[(Document Store)]:::data
-    DGMOVE[DG MOVE Template Source]:::ext
-    BUS[Event Bus]:::ext
+    subgraph REP[Reporting module]
+        ORCH[ReportingOrchestrator]:::mod
+        GUIDE[StepByStepGuidance]:::mod
+        ANS[AnswerManager]:::mod
+        EVID[EvidenceAndSuggestionCollector]:::mod
+        QA[ReportQualityGate]:::mod
+        LIFE[ReportLifecycleManager]:::mod
+        GEN[ReportGenerator]:::mod
+        EXP[ExportManager]:::mod
+        OBL[ObligationResolver]:::mod
+        TPL[TemplateProvider]:::mod
+    end
 
-    API --> AUTH
-    AUTH --> ORCH
-    ORCH --> GUIDE
-    ORCH --> MAP
-    ORCH --> DGMAP
-    ORCH --> TPL
-    ORCH --> AUTO
-    ORCH --> GEN
-    ORCH --> QA
-    ORCH --> EXP
-    ORCH --> PUB
+    subgraph OTHER[Other modules]
+        WF[Workflow]:::other
+        COMP[Complementary Data]:::other
+        KPI[KPI Mapping and Analytics]:::other
+        VAL[Validation]:::other
+    end
 
-    GUIDE --> APPDB
-    MAP --> APPDB
-    DGMAP --> DGMOVE
-    TPL --> DGMOVE
-    AUTO --> APPDB
-    GEN --> DOCS
-    QA --> APPDB
-    EXP --> DOCS
-    PUB --> BUS
+    APPDB[(Report Database)]:::data
+    ARCH[(Report Archive)]:::data
+    META[(Metadata Store - harvest snapshots)]:::data
+    PACK[Template pack eu-2025-264]:::ext
+    LAW["Official Template - Implementing Decision (EU) 2025/264"]:::ext
+
+    API --> ORCH
+    ORCH --> GUIDE & ANS & EVID & QA & LIFE & GEN & EXP
+
+    GUIDE --> TPL
+    GUIDE -->|required markers| OBL
+    GUIDE -->|step state| WF
+    OBL -->|obligationTiers| TPL
+    TPL -->|reads| PACK
+    PACK -.->|transcribed verbatim from| LAW
+    ANS --> APPDB
+    EVID -->|evidence, suggestions| KPI
+    EVID -->|validation results| VAL
+    QA --> OBL
+    QA -->|table / KPI values| COMP
+    QA -->|quality results| APPDB
+    LIFE -->|status, audit| APPDB
+    LIFE -->|freeze snapshots at approval| META
+    GEN --> TPL
+    GEN -->|table / KPI values| COMP
+    GEN -->|drafts, final versions| ARCH
+    EXP -->|exports| ARCH
 ```
+
+Removed from the earlier design:
+
+- **Automation Mode Planner**: full-auto generation is dropped (ADR-0001). Automation is recorded per value as provenance (`metadata-suggested`, `computed`, ...), not as a report-wide mode.
+- **KPI Mapping Engine**: KPI computation and the metadata mapping are owned by the KPI Mapping and Analytics module.
+- **DG MOVE Template Mapper**: report resources use the template pack's stable section, row and KPI IDs directly, so no separate mapping step is needed.
+- **Event Publisher**: there is no event bus (ADR-0002).
 
 ## Primary Runtime Flow (Sequence)
 
@@ -96,15 +119,17 @@ sequenceDiagram
 
 ## Key Internal Components
 
-- ReportingController: API for starting report generation, checking status, and downloading exports.
-- GuidedWorkflowEngine: guides users through steps and validates required inputs.
-- KpiMappingEngine: maps mobilityDCAT-AP elements to KPI and templates.
-- DgMoveTemplateMapper: maps KPI outputs into DG MOVE template fields.
-- TemplateProvider: manages DG MOVE template versions.
-- AutomationModePlanner: applies guided, semi-automatic, or full-automatic generation mode.
-- ReportGenerator: composes report outputs (narrative + tables + indicators).
-- ReportQualityGate: validates completeness, compliance, and output consistency.
-- ExportManager: exports outputs to PDF/HTML/JSON.
+- ReportingController (Reporting API): report resources under `/api/v1/reports`, using the template pack IDs (ADR-0003).
+- ReportingOrchestrator: coordinates the components for one report.
+- TemplateProvider: loads the versioned template pack; a report keeps the pack version it was created with.
+- ObligationResolver: evaluates `obligation(kpi, scope, cycleYear)` from the pack's Annex II data.
+- StepByStepGuidance: section and prompt sequence, guidance text and required-field markers; step state is held by the Workflow module.
+- AnswerManager: narrative answers with their provenance.
+- EvidenceAndSuggestionCollector: metadata facts and suggested values from the KPI Mapping and Analytics module, plus validation results.
+- ReportQualityGate: completeness against Annex II obligations, and consistency checks.
+- ReportLifecycleManager: draft, in-review, approved, exported; audit trail, revisions, and freezing the harvest snapshots the report cites.
+- ReportGenerator: renders the report in the Annex I structure.
+- ExportManager: exports DOCX, PDF and JSON to the Report Archive.
 
 ## Proposed Internal Code Contracts
 

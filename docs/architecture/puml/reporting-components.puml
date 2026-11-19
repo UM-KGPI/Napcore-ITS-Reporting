@@ -1,8 +1,15 @@
 @startuml
-' Reporting Service Components (Level 3/4)
+' Reporting module - components (C4 Level 3/4)
+' Aligned with ADR-0001 (report model follows Implementing Decision (EU) 2025/264),
+' ADR-0002 (modular monolith, no event bus) and ADR-0003 (one public /api/v1).
+' Ownership follows docs/domain/report-data-model.md, section 6.
 skinparam shadowing false
 skinparam componentStyle rectangle
-left to right direction
+skinparam defaultFontName Helvetica
+skinparam ArrowColor #1e3a8a
+top to bottom direction
+skinparam nodesep 25
+skinparam ranksep 60
 
 skinparam component {
   BackgroundColor #dbeafe
@@ -12,42 +19,77 @@ skinparam database {
   BackgroundColor #f3e8ff
   BorderColor #6b21a8
 }
+skinparam file {
+  BackgroundColor #fff3e0
+  BorderColor #b45309
+}
 
-component "Reporting API" as RAPI
-component "Reporting Orchestrator" as ORCH
-component "Guided Workflow Engine" as GUIDE
-component "KPI Mapping Engine" as MAP
-component "DG MOVE Template Mapper" as DGMAP
-component "Template Provider" as TPL
-component "Automation Mode Planner" as AUTO
-component "Report Generator" as GEN
-component "Report Quality Gate" as QA
-component "Export Manager" as EXP
-component "Event Publisher" as PUB
+component "Reporting API\n(/api/v1/reports/...)" as RAPI
 
-database "Application DB" as APPDB
-database "Document Store" as DOCS
-queue "Event Bus" as BUS
-component "DG MOVE Template Source" as DGMOVE #fff3e0
+rectangle "Reporting module" #f8fafc {
+  component "Reporting Orchestrator" as ORCH
+  component "Template Provider\n(loads versioned template pack)" as TPL
+  component "Obligation Resolver\n(Annex II: mandatory / voluntary / additional)" as OBL
+  component "Step-by-step Guidance\n(section and prompt sequence, required markers)" as GUIDE
+  component "Answer Manager\n(narrative answers + provenance)" as ANS
+  component "Evidence and Suggestion Collector\n(metadata facts, suggested values)" as EVID
+  component "Report Quality Gate\n(completeness, consistency)" as QA
+  component "Report Lifecycle Manager\n(draft > in-review > approved > exported,\naudit, revisions, frozen evidence)" as LIFE
+  component "Report Generator\n(renders Annex I structure)" as GEN
+  component "Export Manager\n(DOCX / PDF / JSON)" as EXP
+}
+
+rectangle "Template source" #fffbeb {
+  file "Template pack eu-2025-264\n(template.yaml)" as PACK
+  component "Official Template\nCommission Implementing Decision\n(EU) 2025/264, Annex I and II" as LAW #fff3e0
+}
+
+rectangle "Other modules of the application" #f3f4f6 {
+  component "Workflow module\n(step state)" as WF #e5e7eb
+  component "Complementary Data module\n(table and KPI inputs,\nnetwork lengths, previous report)" as COMP #e5e7eb
+  component "KPI Mapping and Analytics module\n(metadata evidence, KPI computation)" as KPI #e5e7eb
+  component "Validation module\n(validation runs)" as VAL #e5e7eb
+}
+
+rectangle "Data stores" #faf5ff {
+  database "Report Database\n(PostgreSQL)" as APPDB
+  database "Report Archive" as ARCH
+  database "Metadata Store\n(harvest snapshots)" as META
+}
 
 RAPI --> ORCH
-ORCH --> GUIDE
-ORCH --> MAP
-ORCH --> DGMAP
-ORCH --> TPL
-ORCH --> AUTO
-ORCH --> GEN
-ORCH --> QA
-ORCH --> EXP
-ORCH --> PUB
 
-GUIDE --> APPDB
-MAP --> APPDB
-DGMAP --> DGMOVE
-TPL --> DGMOVE
-AUTO --> APPDB
-GEN --> DOCS
-QA --> APPDB
-EXP --> DOCS
-PUB --> BUS
+ORCH --> GUIDE
+ORCH --> ANS
+ORCH --> EVID
+ORCH --> QA
+ORCH --> LIFE
+ORCH --> GEN
+ORCH --> EXP
+
+TPL --> PACK : reads
+PACK .right.> LAW : transcribed\nverbatim from
+GUIDE --> TPL
+GUIDE --> OBL : required markers
+GUIDE --> WF : step state
+OBL --> TPL : obligationTiers
+QA --> OBL
+QA --> COMP : table / KPI values
+QA --> APPDB : quality results
+ANS --> APPDB
+EVID --> KPI : evidence, suggestions
+EVID --> VAL : validation results
+LIFE --> APPDB : status, audit
+LIFE --> META : freeze snapshots at approval
+GEN --> TPL
+GEN --> COMP : table / KPI values
+GEN --> ARCH : drafts, final versions
+EXP --> ARCH : exports
+
+legend bottom left
+  Blue: components of the Reporting module. Grey: other modules of the same application (ADR-0002).
+  Removed from the earlier design: Automation Mode Planner (full-auto dropped, ADR-0001; automation is
+  per-value provenance), KPI Engine (KPI computation is owned by the KPI module), Template Mapper (report
+  resources use the template pack IDs directly), Event Publisher (no event bus, ADR-0002).
+endlegend
 @enduml
